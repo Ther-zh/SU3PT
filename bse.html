@@ -1,0 +1,3256 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI PPT生成系统</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script src="https://unpkg.com/pptxgenjs@3.12.0/dist/pptxgenjs.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --background-color: #ffffff;
+            --text-color: #2c3e50;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            overflow: hidden;
+        }
+
+        #app {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* 侧边栏样式 */
+        #sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #3498db;
+        }
+
+        .mode-toggle {
+            display: flex;
+            margin-bottom: 20px;
+            background-color: #34495e;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .mode-btn {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .mode-btn.active {
+            background-color: #3498db;
+        }
+
+        .slide-list {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+
+        .slide-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            background-color: #34495e;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            position: relative;
+        }
+
+        .slide-item.active {
+            background-color: #3498db;
+        }
+
+        .slide-item:hover .slide-actions {
+            display: flex;
+        }
+
+        .slide-actions {
+            position: absolute;
+            right: 5px;
+            top: 5px;
+            display: none;
+            gap: 5px;
+        }
+
+        .slide-action {
+            width: 20px;
+            height: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        button {
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .primary-btn {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .secondary-btn {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .save-btn {
+            background-color: #2ecc71;
+            color: white;
+        }
+
+        /* 主内容区样式 */
+        #main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #presentation-area {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background-color: #f0f0f0; /* 改为灰色背景以突出幻灯片 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 修改幻灯片样式 */
+        .slide {
+            position: absolute;
+            /* 设置标准16:9的PPT比例 */
+            width: 1024px;
+            height: 576px;
+            /* 防止在小屏幕上溢出 */
+            max-width: 90vw;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            padding: 40px;
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            overflow: hidden;
+            /* 添加边框和阴影增强边界感 */
+            border: 1px solid #ddd;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            /* 居中显示 */
+            margin: auto;
+            /* 默认隐藏 */
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(0.95);
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1);
+            z-index: 10;
+        }
+
+        .slide.hidden {
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(0.95);
+            z-index: 1;
+        }
+
+        /* 移除不需要的prev类样式 */
+        .slide.prev {
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(0.95);
+        }
+
+        .slide-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .slide-title {
+            font-size: 36px;
+            margin-bottom: 15px;
+            color: var(--secondary-color);
+        }
+
+        .slide-subtitle {
+            font-size: 20px;
+            color: #7f8c8d;
+        }
+
+        .slide-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+        }
+
+        .slide-footer {
+            text-align: center;
+            color: #95a5a6;
+            font-size: 14px;
+        }
+
+        /* 导航按钮 */
+        .nav-buttons {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            background-color: rgba(52, 73, 94, 0.7);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .nav-btn:hover {
+            background-color: rgba(52, 73, 94, 0.9);
+        }
+
+        /* 元素样式 */
+        .text-element {
+            padding: 15px;
+            border-radius: 5px;
+        }
+
+        .text-element h3 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .text-element p {
+            line-height: 1.6;
+            color: #34495e;
+        }
+
+        .chart-container {
+            height: 300px;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            padding: 15px;
+        }
+
+        .image-element {
+            text-align: center;
+        }
+
+        .image-element img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 5px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .list-element {
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+        }
+
+        .list-element ul {
+            padding-left: 20px;
+        }
+
+        .list-element li {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        /* 编辑模式样式 */
+        .editable {
+            outline: 2px dashed #3498db;
+            padding: 5px;
+            margin: 5px;
+            position: relative;
+        }
+
+        .selected {
+            outline: 2px solid #e74c3c;
+        }
+
+        .dragging {
+            opacity: 0.8;
+            z-index: 1000;
+        }
+
+        .element-controls {
+            position: absolute;
+            top: -8px;
+            left: -8px;
+            right: -8px;
+            bottom: -8px;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .control-point {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: var(--primary-color);
+            border: 2px solid white;
+            pointer-events: all;
+            cursor: pointer;
+            border-radius: 2px;
+        }
+
+        .resize-tl { top: -6px; left: -6px; cursor: nw-resize; }
+        .resize-tr { top: -6px; right: -6px; cursor: ne-resize; }
+        .resize-bl { bottom: -6px; left: -6px; cursor: sw-resize; }
+        .resize-br { bottom: -6px; right: -6px; cursor: se-resize; }
+        
+        .rotate {
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            cursor: crosshair;
+            border-radius: 50%;
+            background: var(--accent-color);
+        }
+        
+        .delete {
+            top: -25px;
+            right: -6px;
+            cursor: pointer;
+            background: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            line-height: 1;
+            font-weight: bold;
+        }
+
+        /* 工具栏 */
+        .toolbar {
+            display: flex;
+            padding: 10px;
+            background: #ecf0f1;
+            border-bottom: 1px solid #bdc3c7;
+            gap: 10px;
+        }
+
+        .toolbar-btn {
+            padding: 8px 15px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .toolbar-btn:hover {
+            background: #2980b9;
+        }
+
+        /* 全屏模式 */
+        body.fullscreen {
+            overflow: hidden;
+        }
+
+        body.fullscreen #sidebar {
+            transform: translateX(-100%);
+        }
+
+        body.fullscreen #main-content {
+            width: 100%;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* 修改全屏模式下的幻灯片样式 */
+        body.fullscreen .slide {
+            /* 移除固定尺寸限制 */
+            width: 100% !important;
+            height: 100% !important;
+            max-width: 100vw !important;
+            max-height: 100vh !important;
+            /* 移除居中margin */
+            margin: 0 !important;
+            /* 移除边框和阴影以获得更干净的全屏体验 */
+            border: none !important;
+            box-shadow: none !important;
+            /* 确保幻灯片保持16:9比例并尽可能大 */
+            object-fit: contain;
+            transform: none !important;
+        }
+
+        /* 修改演示区域在全屏时的样式 */
+        body.fullscreen #presentation-area {
+            background-color: #000 !important;
+            margin: 0;
+            padding: 0;
+            /* 使用flex布局确保幻灯片居中 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 元素添加面板 */
+        .element-panel {
+            position: absolute;
+            top: 60px;
+            left: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            padding: 15px;
+            z-index: 50;
+            display: none;
+        }
+
+        .element-panel.show {
+            display: block;
+        }
+
+        .element-type {
+            padding: 10px 15px;
+            margin: 5px 0;
+            background: #ecf0f1;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .element-type:hover {
+            background: #d5dbdb;
+        }
+
+        /* 上下文菜单 */
+        .context-menu {
+            position: absolute;
+            background: white;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: none;
+        }
+
+        .context-menu.show {
+            display: block;
+        }
+
+        .context-item {
+            padding: 8px 15px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .context-item:hover {
+            background: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- 侧边栏 -->
+        <div id="sidebar">
+            <div class="logo">AI PPT</div>
+            
+            <div class="mode-toggle">
+                <div class="mode-btn active" id="present-mode">放映模式</div>
+                <div class="mode-btn" id="edit-mode">修改模式</div>
+            </div>
+            
+            <div class="slide-list" id="slide-list">
+                <!-- 幻灯片列表将通过JS动态生成 -->
+            </div>
+            
+            <div class="action-buttons">
+                <button class="primary-btn" id="add-slide">添加幻灯片</button>
+                <button class="secondary-btn" id="delete-slide">删除当前幻灯片</button>
+                <button class="save-btn" id="save-ppt">保存为PPT</button>
+                <!-- 添加导入JSON按钮 -->
+                <button class="primary-btn" id="import-json" style="background: #9b59b6;">导入JSON设计</button>
+            </div>
+        </div>
+        
+        <!-- 主内容区 -->
+        <div id="main-content">
+            <div class="toolbar" id="toolbar" style="display: none;">
+                <button class="toolbar-btn" id="add-text">添加文本</button>
+                <button class="toolbar-btn" id="add-image">添加图片</button>
+                <button class="toolbar-btn" id="add-chart">添加图表</button>
+                <button class="toolbar-btn" id="add-list">添加列表</button>
+            </div>
+            
+            <div id="presentation-area">
+                <!-- 幻灯片将通过JS动态生成 -->
+            </div>
+            
+            <div class="nav-buttons">
+                <div class="nav-btn" id="prev-slide">上一页</div>
+                <div class="nav-btn" id="next-slide">下一页</div>
+                <div class="nav-btn" id="fullscreen">全屏</div>
+            </div>
+        </div>
+        
+        <!-- 元素添加面板 -->
+        <div class="element-panel" id="element-panel">
+            <div class="element-type" data-type="text">文本</div>
+            <div class="element-type" data-type="image">图片</div>
+            <div class="element-type" data-type="chart">图表</div>
+            <div class="element-type" data-type="list">列表</div>
+        </div>
+        
+        <!-- 上下文菜单 -->
+        <div class="context-menu" id="context-menu">
+            <div class="context-item" data-action="edit">编辑内容</div>
+            <div class="context-item" data-action="duplicate">复制元素</div>
+            <div class="context-item" data-action="delete">删除元素</div>
+            <div class="context-item" data-action="bring-to-front">置于顶层</div>
+            <div class="context-item" data-action="send-to-back">置于底层</div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            'use strict'; // 添加严格模式
+            // 添加DOM查询工具函数
+            function $(selector, context = document) {
+                return context.querySelector(selector);
+            }
+
+            function $$(selector, context = document) {
+                return Array.from(context.querySelectorAll(selector));
+            }
+            
+            // 添加全局错误处理
+            window.addEventListener('error', (event) => {
+                console.error('发生错误:', event.error);
+                // 可以显示一个友好的错误提示
+                showNotification('系统发生错误，请刷新页面重试。', 'error');
+            });
+
+            window.addEventListener('unhandledrejection', (event) => {
+                console.error('未处理的Promise拒绝:', event.reason);
+                showNotification('操作执行失败，请重试。', 'error');
+            });
+
+        // 添加通知函数
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.textContent = message;
+            
+            // 添加样式
+            notification.style.position = 'fixed';
+            notification.style.top = '20px';
+            notification.style.right = '20px';
+            notification.style.padding = '15px 25px';
+            notification.style.borderRadius = '5px';
+            notification.style.color = 'white';
+            notification.style.fontWeight = 'bold';
+            notification.style.zIndex = '9999';
+            notification.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+            notification.style.transition = 'transform 0.3s ease-in-out';
+            notification.style.transform = 'translateX(100%)';
+            
+            // 根据类型设置背景色
+            if (type === 'error') {
+                notification.style.backgroundColor = '#e74c3c';
+            } else if (type === 'success') {
+                notification.style.backgroundColor = '#2ecc71';
+            } else {
+                notification.style.backgroundColor = '#3498db';
+            }
+            
+            // 添加到页面
+            document.body.appendChild(notification);
+            
+            // 显示通知
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 10);
+            
+            // 3秒后隐藏
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 3000);
+        }
+        // 元素抽象类
+        class PPTelement {
+            constructor(type, content, style = {}) {
+                this.type = type;
+                this.content = content;
+                this.style = style;
+                this.id = 'element_' + Date.now() + Math.floor(Math.random() * 1000);
+                this.isSelected = false;
+                this.isDraggable = false;
+                this.isResizable = false;
+                this.position = { x: 0, y: 0 };
+                this.size = { width: 0, height: 0 };
+                this.rotation = 0;
+                this.zIndex = 1;
+            }
+            
+            render() {
+                throw new Error("Render method must be implemented by subclass");
+            }
+            
+            // 启用编辑模式
+            enableEdit() {
+                this.isDraggable = true;
+                this.isResizable = true;
+                this.addEditControls();
+                this.makeDraggable();
+                this.makeContentEditable();
+            }
+            
+            // 禁用编辑模式
+            disableEdit() {
+                this.isDraggable = false;
+                this.isResizable = false;
+                this.removeEditControls();
+                this.disableContentEditable();
+            }
+            
+            // 添加编辑控制点
+            // 在 PPTelement 类的 addEditControls 方法中修改
+            addEditControls() {
+                const element = $(`#${this.id}`);
+                if (!element) return;
+                
+                // 先移除已有的控制点
+                this.removeEditControls();
+                
+                // 添加选中样式
+                element.classList.add('editable', 'selected');
+                
+                // 创建控制点容器
+            const controlsContainer = document.createElement('div');
+            controlsContainer.className = 'element-controls';
+            controlsContainer.innerHTML = `
+                <div class="control-point resize-tl" data-action="resize"></div>
+                <div class="control-point resize-tr" data-action="resize"></div>
+                <div class="control-point resize-bl" data-action="resize"></div>
+                <div class="control-point resize-br" data-action="resize"></div>
+                <div class="control-point rotate" data-action="rotate">⟳</div>
+                <div class="control-point delete" data-action="delete">×</div>
+            `;
+                
+                element.appendChild(controlsContainer);
+                this.bindControlEvents(controlsContainer);
+                this.bindContextMenu(element);
+            }
+                
+            // 绑定控制点事件
+            bindControlEvents(controlsContainer) {
+                const element = document.getElementById(this.id);
+                
+                // 删除按钮事件
+                const deleteBtn = controlsContainer.querySelector('.control-point.delete');
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.delete();
+                });
+                
+                // 旋转控制点事件
+                const rotateBtn = controlsContainer.querySelector('.control-point.rotate');
+                this.bindRotateEvent(rotateBtn, element);
+                
+                // 缩放控制点事件
+                const resizePoints = controlsContainer.querySelectorAll('.control-point[data-action="resize"]');
+                resizePoints.forEach(point => {
+                    this.bindResizeEvent(point, element);
+                });
+            }
+            
+            // 绑定上下文菜单
+            bindContextMenu(element) {
+                element.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                    const contextMenu = document.getElementById('context-menu');
+                    contextMenu.style.left = e.clientX + 'px';
+                    contextMenu.style.top = e.clientY + 'px';
+                    contextMenu.classList.add('show');
+                    
+                    // 存储当前元素ID
+                    contextMenu.setAttribute('data-element-id', this.id);
+                    
+                    // 点击其他地方关闭菜单
+                    const closeMenu = () => {
+                        contextMenu.classList.remove('show');
+                        document.removeEventListener('click', closeMenu);
+                    };
+                    
+                    setTimeout(() => {
+                        document.addEventListener('click', closeMenu);
+                    }, 100);
+                });
+            }
+            
+            // 实现拖拽功能
+            makeDraggable() {
+                const element = document.getElementById(this.id);
+                if (!element) return;
+                
+                let isDragging = false;
+                let startX, startY, initialLeft, initialTop;
+                
+                const onMouseDown = (e) => {
+                    if (e.target.isContentEditable || e.target.closest('[contenteditable="true"]')) {
+                        return; // 在编辑文本时不启动拖拽
+                    }
+                    if (!this.isDraggable) return;
+                    if (e.target.classList.contains('control-point')) return;
+                    
+                    isDragging = true;
+                    startX = e.clientX;
+                    startY = e.clientY;
+                    
+                    // 使用 getComputedStyle 获取当前位置
+                    const computedStyle = getComputedStyle(element);
+                    initialLeft = parseFloat(computedStyle.left) || 0;
+                    initialTop = parseFloat(computedStyle.top) || 0;
+                    
+                    element.style.zIndex = '1000';
+                    element.classList.add('dragging');
+                    
+                    e.preventDefault();
+                    e.stopPropagation();
+                };
+                
+                const onMouseMove = (e) => {
+                    if (!isDragging) return;
+                    
+                    const deltaX = e.clientX - startX;
+                    const deltaY = e.clientY - startY;
+                    
+                    const newLeft = initialLeft + deltaX;
+                    const newTop = initialTop + deltaY;
+                    
+                    element.style.left = `${newLeft}px`;
+                    element.style.top = `${newTop}px`;
+                    
+                    // 更新位置数据
+                    this.position.x = newLeft;
+                    this.position.y = newTop;
+                };
+                
+                const onMouseUp = () => {
+                    if (!isDragging) return;
+                    
+                    isDragging = false;
+                    element.style.zIndex = '';
+                    element.classList.remove('dragging');
+                    
+                    // 触发更新事件
+                    this.onPositionChange();
+                };
+                
+                element.addEventListener('mousedown', onMouseDown);
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+                
+                // 保存引用以便后续清理
+                this.dragHandlers = { onMouseDown, onMouseMove, onMouseUp };
+            }
+            
+            // 绑定旋转事件
+            bindRotateEvent(controlPoint, element) {
+                let isRotating = false;
+                let startAngle, initialAngle;
+                
+                const onMouseDown = (e) => {
+                    isRotating = true;
+                    const rect = element.getBoundingClientRect();
+                    const centerX = rect.left + rect.width / 2;
+                    const centerY = rect.top + rect.height / 2;
+                    
+                    startAngle = Math.atan2(e.clientY - centerY, e.clientX - centerX);
+                    initialAngle = this.rotation || 0;
+                    
+                    e.preventDefault();
+                    e.stopPropagation();
+                };
+                
+                const onMouseMove = (e) => {
+                    if (!isRotating) return;
+                    
+                    const rect = element.getBoundingClientRect();
+                    const centerX = rect.left + rect.width / 2;
+                    const centerY = rect.top + rect.height / 2;
+                    
+                    const currentAngle = Math.atan2(e.clientY - centerY, e.clientX - centerX);
+                    const deltaAngle = currentAngle - startAngle;
+                    const newAngle = initialAngle + deltaAngle * (180 / Math.PI);
+                    
+                    this.rotation = newAngle;
+                    element.style.transform = `rotate(${newAngle}deg)`;
+                };
+                
+                const onMouseUp = () => {
+                    isRotating = false;
+                    this.onRotationChange();
+                };
+                
+                controlPoint.addEventListener('mousedown', onMouseDown);
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+            }
+            
+            // 绑定缩放事件
+            // 优化缩放功能
+            bindResizeEvent(controlPoint, element) {
+                let isResizing = false;
+                let startX, startY, initialWidth, initialHeight, initialLeft, initialTop;
+                let parentPosition = { x: 0, y: 0 };
+                
+                // 存储事件处理器以便清理
+                this.resizeHandlers = this.resizeHandlers || {};
+                const handlerKey = controlPoint.dataset.action + '-' + controlPoint.className;
+                
+                // 如果已存在事件处理器，则先移除
+                if (this.resizeHandlers[handlerKey]) {
+                    const { onMouseDown, onMouseMove, onMouseUp } = this.resizeHandlers[handlerKey];
+                    controlPoint.removeEventListener('mousedown', onMouseDown);
+                    document.removeEventListener('mousemove', onMouseMove);
+                    document.removeEventListener('mouseup', onMouseUp);
+                }
+                
+                const onMouseDown = (e) => {
+                    isResizing = true;
+                    startX = e.clientX;
+                    startY = e.clientY;
+                    
+                    const rect = element.getBoundingClientRect();
+                    initialWidth = rect.width;
+                    initialHeight = rect.height;
+                    initialLeft = rect.left;
+                    initialTop = rect.top;
+                    
+                    // 初始化父容器位置，避免在mousemove中重复计算
+                    const parentRect = element.parentElement.getBoundingClientRect();
+                    parentPosition.x = parentRect.left;
+                    parentPosition.y = parentRect.top;
+                    
+                    e.preventDefault();
+                    e.stopPropagation();
+                };
+                
+                const onMouseMove = (e) => {
+                    if (!isResizing) return;
+                    
+                    const deltaX = e.clientX - startX;
+                    const deltaY = e.clientY - startY;
+                    
+                    // 根据控制点位置决定缩放方向
+                    const isRight = controlPoint.classList.contains('resize-tr') || 
+                                controlPoint.classList.contains('resize-br');
+                    const isBottom = controlPoint.classList.contains('resize-bl') || 
+                                    controlPoint.classList.contains('resize-br');
+                    const isLeft = controlPoint.classList.contains('resize-tl') || 
+                                controlPoint.classList.contains('resize-bl');
+                    const isTop = controlPoint.classList.contains('resize-tl') || 
+                                controlPoint.classList.contains('resize-tr');
+                    
+                    let newWidth = initialWidth;
+                    let newHeight = initialHeight;
+                    let newLeft = initialLeft;
+                    let newTop = initialTop;
+                    
+                    if (isRight) newWidth = Math.max(50, initialWidth + deltaX);
+                    if (isLeft) {
+                        newWidth = Math.max(50, initialWidth - deltaX);
+                        newLeft = initialLeft + deltaX;
+                    }
+                    if (isBottom) newHeight = Math.max(30, initialHeight + deltaY);
+                    if (isTop) {
+                        newHeight = Math.max(30, initialHeight - deltaY);
+                        newTop = initialTop + deltaY;
+                    }
+                    
+                    // 确保位置不超出父容器
+                    const parentRect = element.parentElement.getBoundingClientRect();
+                    newLeft = Math.max(parentPosition.x, Math.min(parentRect.right - newWidth, newLeft));
+                    newTop = Math.max(parentPosition.y, Math.min(parentRect.bottom - newHeight, newTop));
+                    
+                    // 更新元素样式
+                    element.style.width = `${newWidth}px`;
+                    element.style.height = `${newHeight}px`;
+                    element.style.left = `${newLeft - parentPosition.x}px`;
+                    element.style.top = `${newTop - parentPosition.y}px`;
+                    
+                    // 更新尺寸数据
+                    this.size.width = newWidth;
+                    this.size.height = newHeight;
+                    this.position.x = newLeft - parentPosition.x;
+                    this.position.y = newTop - parentPosition.y;
+                };
+                
+                const onMouseUp = () => {
+                    if (!isResizing) return;
+                    
+                    isResizing = false;
+                    this.onSizeChange();
+                };
+                
+                controlPoint.addEventListener('mousedown', onMouseDown);
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+                
+                // 保存事件处理器引用
+                this.resizeHandlers[handlerKey] = { onMouseDown, onMouseMove, onMouseUp };
+            }
+            
+            // 删除元素
+            // 在 PPTelement 类的 delete 方法中改进
+            delete() {
+                if (confirm('确定要删除这个元素吗？')) {
+                    const element = $(`#${this.id}`);
+                    if (element) {
+                        // 先移除所有事件监听器和控制点
+                        this.removeEditControls();
+                        element.remove();
+                    }
+                    this.onDelete();
+                    return true;
+                }
+                return false;
+            }
+            
+            // 移除编辑控制点
+            removeEditControls() {
+                const element = $(`#${this.id}`);
+                if (!element) return;
+                
+                element.classList.remove('editable', 'selected', 'dragging');
+                
+                const controls = element.querySelector('.element-controls');
+                if (controls) {
+                    controls.remove();
+                }
+                
+                // 清理事件监听器
+                if (this.dragHandlers) {
+                    element.removeEventListener('mousedown', this.dragHandlers.onMouseDown);
+                    document.removeEventListener('mousemove', this.dragHandlers.onMouseMove);
+                    document.removeEventListener('mouseup', this.dragHandlers.onMouseUp);
+                    this.dragHandlers = null; // 清空引用
+                }
+                
+                // 清理内容编辑事件监听器
+                if (this.contentEditableHandlers) {
+                    element.querySelectorAll('[contenteditable="true"]').forEach(el => {
+                        this.contentEditableHandlers.forEach(handler => {
+                            el.removeEventListener('blur', handler);
+                        });
+                    });
+                    this.contentEditableHandlers = null;
+                }
+            }
+            
+            // 内容更新方法
+            updateContent(newContent) {
+                this.content = { ...this.content, ...newContent };
+                this.updateElement();
+            }
+            
+            // 样式更新方法
+            updateStyle(newStyle) {
+                this.style = { ...this.style, ...newStyle };
+                this.updateElement();
+            }
+            
+            // 更新DOM元素
+            updateElement() {
+                const element = document.getElementById(this.id);
+                if (element) {
+                    const newElement = this.render();
+                    element.outerHTML = newElement;
+                    
+                    // 重新启用编辑模式（如果之前是启用状态）
+                    if (this.isDraggable) {
+                        setTimeout(() => this.enableEdit(), 0);
+                    }
+                }
+            }
+            
+            // 使内容可编辑
+            makeContentEditable() {
+                // 默认实现，子类可以重写
+            }
+            
+            // 禁用内容编辑
+            disableContentEditable() {
+                // 默认实现，子类可以重写
+            }
+            
+            // 复制元素
+            duplicate() {
+                const newElement = Object.assign(Object.create(Object.getPrototypeOf(this)), this);
+                newElement.id = 'element_' + Date.now() + Math.floor(Math.random() * 1000);
+                newElement.position.x += 20;
+                newElement.position.y += 20;
+                return newElement;
+            }
+            
+            // 置于顶层
+            bringToFront() {
+                this.zIndex = 1000;
+                const element = document.getElementById(this.id);
+                if (element) {
+                    element.style.zIndex = this.zIndex;
+                }
+            }
+            
+            // 置于底层
+            sendToBack() {
+                this.zIndex = 1;
+                const element = document.getElementById(this.id);
+                if (element) {
+                    element.style.zIndex = this.zIndex;
+                }
+            }
+            
+            // 回调函数 - 子类可以重写
+            onPositionChange() {
+                console.log(`Position changed: (${this.position.x}, ${this.position.y})`);
+            }
+            
+            onRotationChange() {
+                console.log(`Rotation changed: ${this.rotation}°`);
+            }
+            
+            onSizeChange() {
+                console.log(`Size changed: ${this.size.width}×${this.size.height}`);
+                // 添加防抖保存，避免频繁保存影响性能
+                if (this.sizeChangeTimeout) {
+                    clearTimeout(this.sizeChangeTimeout);
+                }
+                this.sizeChangeTimeout = setTimeout(() => {
+                    // 触发保存操作
+                    if (window.pptManager) {
+                        window.pptManager.saveToLocalStorage();
+                    }
+                }, 300); // 300毫秒防抖延迟
+            }
+            
+            onDelete() {
+                console.log(`Element ${this.id} deleted`);
+            }
+            
+            // 获取元素状态（用于保存）
+                getState() {
+                    return {
+                        type: this.type,
+                        content: this.content,
+                        style: this.style,
+                        position: this.position,
+                        size: this.size,
+                        rotation: this.rotation,
+                        zIndex: this.zIndex,
+                        id: this.id
+                    };
+                }
+            
+            // 从状态恢复
+            setState(state) {
+                this.content = state.content;
+                this.style = state.style;
+                this.position = state.position;
+                this.size = state.size;
+                this.rotation = state.rotation;
+                this.zIndex = state.zIndex;
+                this.updateElement();
+            }
+        }
+
+
+        // 在 PPTelement 类之后添加 BackgroundElement 类
+        class BackgroundElement extends PPTelement {
+            constructor(content, style = {}) {
+                super('background', content, style);
+                this.zIndex = -1; // 背景始终在最底层
+            }
+            
+            render() {
+                return `
+                    <div class="background-element" id="${this.id}"
+                        style="position: absolute; left: 0; top: 0; width: 100%; height: 100%;
+                                background: ${this.content.background || '#ffffff'};
+                                z-index: ${this.zIndex};">
+                    </div>
+                `;
+            }
+            
+            // 重写编辑相关方法，背景通常不需要编辑控制点
+            addEditControls() {
+                const element = $(`#${this.id}`);
+                if (!element) return;
+                
+                element.classList.add('editable', 'selected');
+                
+                // 只添加删除按钮，不添加缩放和旋转控制点
+                const controlsContainer = document.createElement('div');
+                controlsContainer.className = 'element-controls';
+                controlsContainer.innerHTML = `
+                    <div class="control-point delete" data-action="delete">×</div>
+                `;
+                
+                element.appendChild(controlsContainer);
+                
+                // 绑定删除事件
+                const deleteBtn = controlsContainer.querySelector('.control-point.delete');
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.delete();
+                });
+                
+                this.bindContextMenu(element);
+            }
+            
+            // 背景不可拖拽
+            makeDraggable() {
+                // 背景通常不需要拖拽
+            }
+            
+            // 背景不可缩放
+            bindResizeEvent() {
+                // 背景通常不需要缩放
+            }
+        }
+
+        // 文本元素类
+        class TextElement extends PPTelement {
+            constructor(content, style = {}) {
+                super('text', content, style);
+            }
+            
+            render() {
+                return `
+                    <div class="text-element" id="${this.id}" 
+                         style="position: absolute; left: ${this.position.x}px; top: ${this.position.y}px;
+                                width: ${this.size.width || 'auto'}; height: ${this.size.height || 'auto'};
+                                transform: rotate(${this.rotation}deg); z-index: ${this.zIndex};">
+${this.content.title ? `<h3 style="font-size: ${this.style.titleSize || '24px'};">${this.content.title}</h3>` : ''}
+${this.content.body ? `<p style="font-size: ${this.style.bodySize || '16px'};">${this.content.body}</p>` : ''}
+                    </div>
+                `;
+            }
+            
+            // 设置字体大小方法
+            setFontSize(elementType, size) {
+                if (elementType === 'title') {
+                    this.style.titleSize = size;
+                } else if (elementType === 'body') {
+                    this.style.bodySize = size;
+                }
+                this.updateElement();
+            }
+            
+            // 重写启用编辑方法，添加文本编辑功能
+            
+            // 在 TextElement 类中修改 makeContentEditable 方法
+            makeContentEditable() {
+                const element = $(`#${this.id}`);
+                if (element) {
+                    this.contentEditableHandlers = [];
+                    
+                    const headings = element.querySelectorAll('h3, p');
+                    headings.forEach(el => {
+                        el.setAttribute('contenteditable', 'true');
+                        
+                        // 添加输入事件监听器
+                        const inputHandler = () => {
+                            this.content.title = element.querySelector('h3')?.textContent || '';
+                            this.content.body = element.querySelector('p')?.textContent || '';
+                        };
+                        
+                        el.addEventListener('input', inputHandler);
+                        this.contentEditableHandlers.push(() => {
+                            el.removeEventListener('input', inputHandler);
+                        });
+                        
+                        // 添加点击事件，允许光标定位
+                        const clickHandler = (e) => {
+                            e.stopPropagation(); // 阻止事件冒泡，避免触发拖拽
+                        };
+                        
+                        el.addEventListener('click', clickHandler);
+                        this.contentEditableHandlers.push(() => {
+                            el.removeEventListener('click', clickHandler);
+                        });
+                        
+                        // 添加键盘事件，允许方向键移动光标
+                        const keydownHandler = (e) => {
+                            e.stopPropagation(); // 阻止事件冒泡，避免触发幻灯片导航
+                            // 允许所有键盘事件在编辑时正常工作
+                        };
+                        
+                        el.addEventListener('keydown', keydownHandler);
+                        this.contentEditableHandlers.push(() => {
+                            el.removeEventListener('keydown', keydownHandler);
+                        });
+                    });
+                    
+                    // 修改双击事件处理
+                    const doubleClickHandler = (e) => {
+                        if (!e.target.closest('.control-point')) {
+                            const editable = e.target.closest('[contenteditable="true"]') || 
+                                        element.querySelector('[contenteditable="true"]');
+                            
+                            if (editable) {
+                                // 使用更可靠的方式设置光标位置
+                                const range = document.createRange();
+                                const selection = window.getSelection();
+                                
+                                // 如果点击位置在文本节点中，尝试将光标设置到点击位置
+                                if (e.target.nodeType === Node.TEXT_NODE) {
+                                    const textNode = e.target;
+                                    const offset = this.getCaretOffset(textNode, e);
+                                    range.setStart(textNode, offset);
+                                    range.setEnd(textNode, offset);
+                                } else {
+                                    // 否则选择整个内容
+                                    range.selectNodeContents(editable);
+                                }
+                                
+                                selection.removeAllRanges();
+                                selection.addRange(range);
+                            }
+                            
+                            e.stopPropagation();
+                        }
+                    };
+                    
+                    element.addEventListener('dblclick', doubleClickHandler);
+                    this.contentEditableHandlers.push(() => {
+                        element.removeEventListener('dblclick', doubleClickHandler);
+                    });
+                }
+            }
+
+            // 添加辅助方法计算光标位置
+            getCaretOffset(textNode, event) {
+                const range = document.createRange();
+                range.selectNodeContents(textNode);
+                const preCaretRange = range.cloneRange();
+                const rects = range.getClientRects();
+                
+                let offset = 0;
+                let minDistance = Infinity;
+                
+                // 找到距离点击位置最近的字符边界
+                for (let i = 0; i <= textNode.length; i++) {
+                    preCaretRange.setEnd(textNode, i);
+                    const rect = preCaretRange.getBoundingClientRect();
+                    
+                    if (rect.width > 0) {
+                        const distance = Math.abs(rect.left - event.clientX);
+                        if (distance < minDistance) {
+                            minDistance = distance;
+                            offset = i;
+                        }
+                    }
+                }
+                
+                return offset;
+            }
+            
+            disableContentEditable() {
+                const element = $(`#${this.id}`);
+                if (element) {
+                    const headings = element.querySelectorAll('h3, p');
+                    headings.forEach(el => {
+                        el.setAttribute('contenteditable', 'false');
+                    });
+                }
+            }
+        }
+
+        // 图表元素类
+        class ChartElement extends PPTelement {
+            constructor(content, style = {}) {
+                super('chart', content, style);
+            }
+            
+            render() {
+                return `
+                    <div class="chart-container" id="${this.id}"
+                         style="position: absolute; left: ${this.position.x}px; top: ${this.position.y}px;
+                                width: ${this.size.width || '500px'}; height: ${this.size.height || '300px'};
+                                transform: rotate(${this.rotation}deg); z-index: ${this.zIndex};">
+                        <div id="chart-${this.id}" style="width: 100%; height: 100%;"></div>
+                    </div>
+                `;
+            }
+            
+            // 修改 ChartElement 类的 renderChart 方法
+            renderChart() {
+                // 使用requestAnimationFrame确保DOM已渲染
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        const chartDom = $(`#chart-${this.id}`);
+                        if (chartDom && typeof echarts !== 'undefined') {
+                            // 先销毁已存在的图表实例
+                            const existingChart = echarts.getInstanceByDom(chartDom);
+                            if (existingChart) {
+                                existingChart.dispose();
+                            }
+                              
+                            const myChart = echarts.init(chartDom);
+                            // 获取图表选项
+                            const chartOption = this.content.chartOption || {
+                                title: { text: '示例图表' },
+                                tooltip: {},
+                                xAxis: { data: ['A', 'B', 'C', 'D', 'E'] },
+                                yAxis: {},
+                                series: [{ name: '销量', type: 'bar', data: [5, 20, 36, 10, 10] }]
+                            };
+                             
+                            // 检查并处理x轴数据，确保数字类型正确显示
+                            if (chartOption.xAxis && chartOption.xAxis.data) {
+                                // 检查是否大部分数据是数字
+                                let numericCount = 0;
+                                const totalCount = chartOption.xAxis.data.length;
+                                 
+                                chartOption.xAxis.data.forEach(item => {
+                                    if (!isNaN(parseFloat(item)) && isFinite(item)) {
+                                        numericCount++;
+                                    }
+                                });
+                                 
+                                // 如果超过70%的数据是数字，则将x轴配置为数值轴
+                                if (numericCount / totalCount > 0.7 && totalCount > 0) {
+                                    // 保存原始数据作为刻度标签
+                                    const originalLabels = [...chartOption.xAxis.data];
+                                     
+                                    // 将数据转换为数字
+                                    const numericData = chartOption.xAxis.data.map(item => parseFloat(item) || 0);
+                                     
+                                    // 重新配置x轴为数值轴
+                                    chartOption.xAxis = {
+                                        type: 'category',
+                                        data: originalLabels,
+                                        // 强制使用原始标签显示
+                                        axisLabel: {
+                                            formatter: function(value, index) {
+                                                return originalLabels[index];
+                                            }
+                                        }
+                                    };
+                                }
+                            }
+                              
+                            myChart.setOption(chartOption);
+                              
+                            // 存储图表实例引用
+                            this.chartInstance = myChart;
+                              
+                            // 窗口大小变化时重新调整图表
+                            window.addEventListener('resize', () => {
+                                if (this.chartInstance) {
+                                    this.chartInstance.resize();
+                                }
+                            });
+                        }
+                    });
+                });
+            }
+             
+            // 在删除时销毁图表实例
+            onDelete() {
+                if (this.chartInstance) {
+                    this.chartInstance.dispose();
+                    this.chartInstance = null;
+                }
+                super.onDelete();
+            }
+            
+            onSizeChange() {
+                super.onSizeChange();
+                // 图表尺寸变化后重新渲染
+                setTimeout(() => this.renderChart(), 100);
+            }
+        }
+
+        // 图片元素类
+        class ImageElement extends PPTelement {
+            constructor(content, style = {}) {
+                super('image', content, style);
+            }
+            
+            render() {
+                return `
+                    <div class="image-element" id="${this.id}"
+                         style="position: absolute; left: ${this.position.x}px; top: ${this.position.y}px;
+                                width: ${this.size.width || '300px'}; height: ${this.size.height || '200px'};
+                                transform: rotate(${this.rotation}deg); z-index: ${this.zIndex};">
+                        <img src="${this.content.src || 'https://via.placeholder.com/300x200'}" 
+                             alt="${this.content.alt || '图片'}" 
+                             style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                `;
+            }
+        }
+
+        // 列表元素类
+        class ListElement extends PPTelement {
+            constructor(content, style = {}) {
+                super('list', content, style);
+                this.contentEditableHandlers = [];
+            }
+            
+            render() {
+                const items = this.content.items || ['项目1', '项目2', '项目3'];
+                const listItems = items.map(item => `<li>${item}</li>`).join('');
+                
+                return `
+                    <div class="list-element" id="${this.id}"
+                         style="position: absolute; left: ${this.position.x}px; top: ${this.position.y}px;
+                                width: ${this.size.width || 'auto'}; height: ${this.size.height || 'auto'};
+                                transform: rotate(${this.rotation}deg); z-index: ${this.zIndex};">
+${this.content.title ? `<h3>${this.content.title}</h3>` : ''}
+                        <ul>${listItems}</ul>
+                    </div>
+                `;
+            }
+            
+            // 重写启用编辑方法，添加列表编辑功能
+            makeContentEditable() {
+                const element = document.getElementById(this.id);
+                if (element) {
+                    const title = element.querySelector('h3');
+                    const list = element.querySelector('ul');
+                    const listItems = element.querySelectorAll('li');
+                     
+                    // 设置可编辑属性
+                    title.setAttribute('contenteditable', 'true');
+                    list.setAttribute('contenteditable', 'true');
+                     
+                    // 为标题添加双击事件，聚焦并选中文本
+                    const titleDblClickHandler = () => {
+                        title.focus();
+                        // 创建一个范围选择器
+                        const range = document.createRange();
+                        range.selectNodeContents(title);
+                        // 获取选择对象
+                        const selection = window.getSelection();
+                        selection.removeAllRanges();
+                        selection.addRange(range);
+                    };
+                    title.addEventListener('dblclick', titleDblClickHandler);
+                    this.contentEditableHandlers.push(() => {
+                        title.removeEventListener('dblclick', titleDblClickHandler);
+                    });
+                     
+                    // 为每个列表项添加双击事件
+                    listItems.forEach((item, index) => {
+                        const itemDblClickHandler = () => {
+                            item.focus();
+                            const range = document.createRange();
+                            range.selectNodeContents(item);
+                            const selection = window.getSelection();
+                            selection.removeAllRanges();
+                            selection.addRange(range);
+                        };
+                        item.addEventListener('dblclick', itemDblClickHandler);
+                        this.contentEditableHandlers.push(() => {
+                            item.removeEventListener('dblclick', itemDblClickHandler);
+                        });
+                    });
+                     
+                    // 添加失焦事件保存内容
+                    const titleBlurHandler = () => {
+                        this.content.title = title.textContent;
+                    };
+                    title.addEventListener('blur', titleBlurHandler);
+                    this.contentEditableHandlers.push(() => {
+                        title.removeEventListener('blur', titleBlurHandler);
+                    });
+                     
+                    const listBlurHandler = () => {
+                        const items = Array.from(list.querySelectorAll('li')).map(li => li.textContent);
+                        this.content.items = items;
+                    };
+                    list.addEventListener('blur', listBlurHandler);
+                    this.contentEditableHandlers.push(() => {
+                        list.removeEventListener('blur', listBlurHandler);
+                    });
+                }
+            }
+            
+            disableContentEditable() {
+                const element = $(`#${this.id}`);
+                if (element) {
+                    const title = element.querySelector('h3');
+                    const list = element.querySelector('ul');
+                     
+                    // 清理所有事件监听器
+                    this.contentEditableHandlers.forEach(handler => handler());
+                    this.contentEditableHandlers = [];
+                     
+                    // 移除可编辑属性
+                    title.setAttribute('contenteditable', 'false');
+                    list.setAttribute('contenteditable', 'false');
+                }
+            }
+        }
+
+        // 幻灯片类
+        class Slide {
+            constructor(title = '新幻灯片', elements = []) {
+                this.title = title;
+                this.elements = elements;
+                this.id = 'slide_' + Date.now() + Math.floor(Math.random() * 1000);
+                this.backgroundColor = '#ffffff';
+                this.backgroundImage = '';
+            }
+            
+            addElement(element) {
+                this.elements.push(element);
+            }
+            
+            removeElement(elementId) {
+                this.elements = this.elements.filter(el => el.id !== elementId);
+            }
+            
+            render() {
+                const elementsHTML = this.elements.map(element => element.render()).join('');
+                
+                return `
+                    <div class="slide hidden" id="${this.id}">
+                        <div class="slide-body">
+                            ${elementsHTML}
+                        </div>
+                        <div class="slide-footer">
+                            <p>AI PPT生成系统</p>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            renderElements() {
+                this.elements.forEach(element => {
+                    if (element.type === 'chart') {
+                        setTimeout(() => element.renderChart(), 100);
+                    }
+                });
+            }
+        }
+
+        // 编辑管理器
+        class EditManager {
+            constructor() {
+                this.isEditMode = false;
+                this.selectedElement = null;
+                this.elements = new Map(); // 存储所有可编辑元素
+            }
+            
+            // 注册元素
+            registerElement(element) {
+                this.elements.set(element.id, element);
+                if (this.isEditMode && element.enableEdit) {
+                    // 使用setTimeout确保DOM已渲染
+                    setTimeout(() => {
+                        try {
+                            element.enableEdit();
+                        } catch (error) {
+                            console.error('启用元素编辑时出错:', error);
+                        }
+                    }, 0);
+                }
+            }
+            
+            // 取消注册元素
+            unregisterElement(elementId) {
+                const element = this.elements.get(elementId);
+                if (element) {
+                    element.disableEdit();
+                    this.elements.delete(elementId);
+                }
+            }
+            
+            // 启用全局编辑模式
+            enableGlobalEdit() {
+                this.isEditMode = true;
+                this.elements.forEach(element => {
+                    if (element.enableEdit) {
+                        try {
+                            element.enableEdit();
+                        } catch (error) {
+                            console.error('启用元素编辑时出错:', error);
+                        }
+                    }
+                });
+            }
+            
+            // 禁用全局编辑模式
+            // 禁用全局编辑模式
+            disableGlobalEdit() {
+                this.isEditMode = false;
+                this.elements.forEach(element => {
+                    if (element.disableEdit) {
+                        try {
+                            element.disableEdit();
+                        } catch (error) {
+                            console.error('禁用元素编辑时出错:', error);
+                        }
+                    }
+                });
+                this.selectedElement = null;
+            }
+            
+            // 选择元素
+            selectElement(elementId) {
+                // 取消之前选中的元素
+                if (this.selectedElement) {
+                    const prevElement = this.elements.get(this.selectedElement);
+                    if (prevElement) {
+                        prevElement.disableEdit();
+                        prevElement.enableEdit(); // 重新启用但不选中
+                    }
+                }
+                
+                // 选中新元素
+                this.selectedElement = elementId;
+                const element = this.elements.get(elementId);
+                if (element) {
+                    element.enableEdit();
+                }
+            }
+            
+            // 获取所有元素状态（用于保存）
+            getSnapshot() {
+                const snapshot = [];
+                this.elements.forEach(element => {
+                    snapshot.push(element.getState());
+                });
+                return snapshot;
+            }
+            
+            // 从快照恢复
+                    // 从快照恢复（更新以支持自定义元素）
+            restoreSnapshot(snapshot) {
+                this.elements.clear();
+                snapshot.forEach(elementState => {
+                    // 使用ElementRegistry创建元素
+                    const element = ElementRegistry.createElement(
+                        elementState.type, 
+                        elementState.content, 
+                        elementState.style
+                    );
+                    
+                    if (element) {
+                        element.setState(elementState);
+                        this.registerElement(element);
+                    }
+                });
+            }
+
+            
+            // 清理所有编辑状态
+            cleanup() {
+                // 移除所有元素的编辑状态
+                this.elements.forEach(element => {
+                    element.removeEditControls();
+                });
+                this.elements.clear();
+            }
+        }
+        // 在PPTManager类之前添加ElementRegistry类
+        class ElementRegistry {
+            static customElements = new Map();
+            
+            // 注册新元素类型
+            static registerElementType(typeName, elementClass) {
+                this.customElements.set(typeName, elementClass);
+                console.log(`已注册元素类型: ${typeName}`);
+            }
+            
+            // 创建元素实例
+            static createElement(type, content, style = {}) {
+                // 首先检查自定义元素
+                if (this.customElements.has(type)) {
+                    const ElementClass = this.customElements.get(type);
+                    return new ElementClass(content, style);
+                }
+                
+                // 回退到基础元素类型
+                switch (type) {
+                    case 'text':
+                        return new TextElement(content, style);
+                    case 'image':
+                        return new ImageElement(content, style);
+                    case 'chart':
+                        return new ChartElement(content, style);
+                    case 'list':
+                        return new ListElement(content, style);
+                    case 'background': // 添加背景元素类型
+                        return new BackgroundElement(content, style);
+                    default:
+                        console.warn(`未知元素类型: ${type}，回退到文本元素`);
+                        return new TextElement(content, style);
+                }
+            }
+            
+            // 获取所有已注册的类型
+            static getRegisteredTypes() {
+                const baseTypes = ['text', 'image', 'chart', 'list', 'background'];
+                const customTypes = Array.from(this.customElements.keys());
+                return [...baseTypes, ...customTypes];
+            }
+        }
+
+        // 自定义元素基类
+        class CustomElement extends PPTelement {
+            constructor(type, content, style = {}) {
+                super(type, content, style);
+            }
+            
+            render() {
+                // 默认实现，子类应该重写这个方法来提供模板
+                return `
+                    <div class="custom-element" id="${this.id}"
+                        style="position: absolute; left: ${this.position.x}px; top: ${this.position.y}px;
+                                width: ${this.size.width || '300px'}; height: ${this.size.height || '200px'};
+                                transform: rotate(${this.rotation}deg); z-index: ${this.zIndex};">
+                        ${this.content.html || '自定义元素'}
+                    </div>
+                `;
+            }
+        }
+        // PPT管理类
+        class PPTManager {
+            constructor() {
+                this.slides = [];
+                this.currentSlideIndex = 0;
+                this.isEditMode = false;
+                this.editManager = new EditManager();
+                this.history = []; // 历史记录
+                this.historyIndex = -1; // 当前历史位置
+                this.historyLimit = 30; // 历史记录最大数量
+                this.themes = {
+                    default: {
+                        primaryColor: '#3498db',
+                        secondaryColor: '#2c3e50',
+                        accentColor: '#e74c3c',
+                        backgroundColor: '#ffffff',
+                        textColor: '#2c3e50'
+                    },
+                    dark: {
+                        primaryColor: '#3498db',
+                        secondaryColor: '#ecf0f1',
+                        accentColor: '#e74c3c',
+                        backgroundColor: '#2c3e50',
+                        textColor: '#ecf0f1'
+                    },
+                    nature: {
+                        primaryColor: '#2ecc71',
+                        secondaryColor: '#34495e',
+                        accentColor: '#f39c12',
+                        backgroundColor: '#f9f9f9',
+                        textColor: '#2c3e50'
+                    }
+                };
+                this.currentTheme = 'default';
+                this.init();
+            }
+            
+            // 保存演示文稿到本地存储
+            saveToLocalStorage() {
+                try {
+                    const presentationData = {
+                        slides: this.slides.map(slide => {
+                            return {
+                                title: slide.title,
+                                backgroundColor: slide.backgroundColor,
+                                backgroundImage: slide.backgroundImage,
+                                elements: slide.elements.map(element => element.getState())
+                            };
+                        }),
+                        currentSlideIndex: this.currentSlideIndex
+                    };
+                    
+                    localStorage.setItem('ai-ppt-presentation', JSON.stringify(presentationData));
+                    return true;
+                } catch (error) {
+                    console.error('保存到本地存储失败:', error);
+                    return false;
+                }
+            }
+            
+            // 从本地存储加载演示文稿
+            loadFromLocalStorage() {
+                try {
+                    const savedData = localStorage.getItem('ai-ppt-presentation');
+                    if (savedData) {
+                        const presentationData = JSON.parse(savedData);
+                        
+                        // 清空现有幻灯片
+                        this.slides = [];
+                        
+                        // 恢复幻灯片和元素
+                        presentationData.slides.forEach(slideData => {
+                            const slide = new Slide(slideData.title);
+                            slide.backgroundColor = slideData.backgroundColor;
+                            slide.backgroundImage = slideData.backgroundImage;
+                            
+                            // 恢复元素
+                            slideData.elements.forEach(elementState => {
+                                let element;
+                                switch (elementState.type) {
+                                    case 'text': element = new TextElement(elementState.content, elementState.style); break;
+                                    case 'image': element = new ImageElement(elementState.content, elementState.style); break;
+                                    case 'chart': element = new ChartElement(elementState.content, elementState.style); break;
+                                    case 'list': element = new ListElement(elementState.content, elementState.style); break;
+                                }
+                                
+                                if (element) {
+                                    element.setState(elementState);
+                                    slide.addElement(element);
+                                }
+                            });
+                            
+                            this.slides.push(slide);
+                        });
+                        
+                        this.currentSlideIndex = presentationData.currentSlideIndex;
+                        this.renderSlides();
+                        this.renderSlideList();
+                        
+                        return true;
+                    }
+                } catch (error) {
+                    console.error('从本地存储加载失败:', error);
+                }
+                return false;
+            }
+            
+            // 创建历史快照
+            createSnapshot() {
+                // 移除当前状态后的所有历史记录
+                this.history = this.history.slice(0, this.historyIndex + 1);
+                
+                // 创建当前状态快照
+                const snapshot = {
+                    slides: this.slides.map(slide => {
+                        return {
+                            title: slide.title,
+                            backgroundColor: slide.backgroundColor,
+                            backgroundImage: slide.backgroundImage,
+                            elements: slide.elements.map(element => element.getState())
+                        };
+                    }),
+                    currentSlideIndex: this.currentSlideIndex
+                };
+                
+                // 添加到历史记录
+                this.history.push(snapshot);
+                this.historyIndex++;
+                
+                // 如果超过历史记录限制，移除最早的记录
+                if (this.history.length > this.historyLimit) {
+                    this.history.shift();
+                    this.historyIndex--;
+                }
+            }
+            
+            // 撤销
+            undo() {
+                if (this.historyIndex > 0) {
+                    this.historyIndex--;
+                    this.restoreFromSnapshot(this.history[this.historyIndex]);
+                }
+            }
+            
+            // 重做
+            redo() {
+                if (this.historyIndex < this.history.length - 1) {
+                    this.historyIndex++;
+                    this.restoreFromSnapshot(this.history[this.historyIndex]);
+                }
+            }
+            
+            // 从快照恢复
+            restoreFromSnapshot(snapshot) {
+                // 清空现有幻灯片
+                this.slides = [];
+                
+                // 恢复幻灯片和元素
+                snapshot.slides.forEach(slideData => {
+                    const slide = new Slide(slideData.title);
+                    slide.backgroundColor = slideData.backgroundColor;
+                    slide.backgroundImage = slideData.backgroundImage;
+                    
+                    // 恢复元素
+                    slideData.elements.forEach(elementState => {
+                        let element;
+                        switch (elementState.type) {
+                            case 'text': element = new TextElement(elementState.content, elementState.style); break;
+                            case 'image': element = new ImageElement(elementState.content, elementState.style); break;
+                            case 'chart': element = new ChartElement(elementState.content, elementState.style); break;
+                            case 'list': element = new ListElement(elementState.content, elementState.style); break;
+                        }
+                        
+                        if (element) {
+                            element.setState(elementState);
+                            slide.addElement(element);
+                        }
+                    });
+                    
+                    this.slides.push(slide);
+                });
+                
+                this.currentSlideIndex = snapshot.currentSlideIndex;
+                this.renderSlides();
+                this.renderSlideList();
+            }
+            
+            // 应用主题
+            applyTheme(themeName) {
+                if (!this.themes[themeName]) return;
+                
+                this.currentTheme = themeName;
+                const theme = this.themes[themeName];
+                
+                // 更新CSS变量
+                document.documentElement.style.setProperty('--primary-color', theme.primaryColor);
+                document.documentElement.style.setProperty('--secondary-color', theme.secondaryColor);
+                document.documentElement.style.setProperty('--accent-color', theme.accentColor);
+                document.documentElement.style.setProperty('--background-color', theme.backgroundColor);
+                document.documentElement.style.setProperty('--text-color', theme.textColor);
+                
+                // 更新所有幻灯片背景色
+                this.slides.forEach(slide => {
+                    slide.backgroundColor = theme.backgroundColor;
+                });
+                
+                // 重新渲染
+                this.renderSlides();
+            }
+            
+            init() {
+                // 尝试从本地存储加载
+                if (!this.loadFromLocalStorage()) {
+                    // 如果没有保存的数据，添加初始幻灯片
+                    this.addSlide('欢迎使用AI PPT');
+                    const firstSlide = this.slides[0];
+                    
+                    // 添加示例元素
+                    firstSlide.addElement(new TextElement({
+                        title: 'AI PPT生成系统',
+                        body: '这是一个基于HTML、CSS和JavaScript的智能PPT生成系统，支持动态内容生成和编辑。'
+                    }));
+                    
+                    firstSlide.addElement(new ListElement({
+                        title: '主要功能',
+                        items: [
+                            '智能内容生成',
+                            '动态图表插入',
+                            '多模式切换',
+                            '导出为PPT文件'
+                        ]
+                    }));
+                }
+                // 添加JSON导入功能
+                this.addJSONImportFeature();
+                // 渲染幻灯片
+                this.renderSlides();
+                this.renderSlideList();
+                
+                // 绑定事件
+                this.bindEvents();
+                
+                // 添加定期自动保存
+                setInterval(() => {
+                    this.saveToLocalStorage();
+                }, 30000); // 每30秒自动保存
+            }
+            
+            addSlide(title = '新幻灯片') {
+                this.createSnapshot();
+                const newSlide = new Slide(title);
+                this.slides.push(newSlide);
+                this.currentSlideIndex = this.slides.length - 1;
+                this.renderSlides();
+                this.renderSlideList();
+                return newSlide;
+            }
+            
+            removeSlide(index) {
+                this.createSnapshot();
+                if (this.slides.length <= 1) {
+                    alert('至少需要保留一张幻灯片');
+                    return;
+                }
+                
+                this.slides.splice(index, 1);
+                
+                if (this.currentSlideIndex >= index) {
+                    this.currentSlideIndex = Math.max(0, this.currentSlideIndex - 1);
+                }
+                
+                this.renderSlides();
+                this.renderSlideList();
+            }
+            
+            nextSlide() {
+                if (this.currentSlideIndex < this.slides.length - 1) {
+                    this.currentSlideIndex++;
+                    this.renderSlides(); // 重新渲染而不是只切换类
+                    this.renderSlideList();
+                }
+            }
+
+            prevSlide() {
+                if (this.currentSlideIndex > 0) {
+                    this.currentSlideIndex--;
+                    this.renderSlides(); // 重新渲染而不是只切换类
+                    this.renderSlideList();
+                }
+            }
+
+            goToSlide(index) {
+                if (index >= 0 && index < this.slides.length) {
+                    this.currentSlideIndex = index;
+                    this.renderSlides(); // 重新渲染而不是只切换类
+                    this.renderSlideList();
+                }
+            }
+            
+            renderSlides() {
+                const presentationArea = document.getElementById('presentation-area');
+                
+                if (!presentationArea) {
+                    console.error('演示区域元素未找到');
+                    return;
+                }
+                
+                // 清空现有内容
+                presentationArea.innerHTML = '';
+                
+                // 只渲染当前幻灯片以提高性能
+                const currentSlide = this.slides[this.currentSlideIndex];
+                if (currentSlide) {
+                    const slideElement = document.createElement('div');
+                    slideElement.innerHTML = currentSlide.render();
+                    const slideDOM = slideElement.firstElementChild;
+                    
+                    // 设置为活动状态
+                    slideDOM.classList.add('active');
+                    slideDOM.classList.remove('hidden');
+                    
+                    presentationArea.appendChild(slideDOM);
+                    
+                    // 注册当前幻灯片的元素到编辑管理器
+                    currentSlide.elements.forEach(element => {
+                        try {
+                            this.editManager.registerElement(element);
+                        } catch (error) {
+                            console.error(`注册元素${element.id}时出错:`, error);
+                        }
+                    });
+                    
+                    // 渲染图表元素
+                    setTimeout(() => {
+                        try {
+                            currentSlide.renderElements();
+                        } catch (error) {
+                            console.error('渲染图表元素时出错:', error);
+                        }
+                    }, 100);
+                }
+            }
+            
+            showCurrentSlide() {
+                const slides = $$('.slide');
+                slides.forEach((slide, index) => {
+                    // 移除所有状态类
+                    slide.classList.remove('active', 'prev', 'hidden');
+                    
+                    if (index === this.currentSlideIndex) {
+                        slide.classList.add('active');
+                    } else {
+                        slide.classList.add('hidden');
+                    }
+                });
+                
+                // 更新幻灯片列表中的活动项
+                const slideItems = $$('.slide-item');
+                slideItems.forEach((item, index) => {
+                    item.classList.toggle('active', index === this.currentSlideIndex);
+                });
+            }
+            
+            renderSlideList() {
+                const slideList = $('#slide-list');
+                slideList.innerHTML = '';
+                
+                this.slides.forEach((slide, index) => {
+                    const slideItem = document.createElement('div');
+                    slideItem.className = `slide-item ${index === this.currentSlideIndex ? 'active' : ''}`;
+                    slideItem.innerHTML = `
+                            ${index + 1}. ${slide.title}
+                            <div class="slide-actions">
+                                <div class="slide-action edit-slide" title="编辑标题">✏️</div>
+                                <div class="slide-action delete-slide" title="删除幻灯片">🗑️</div>
+                            </div>
+                        `;
+                    
+                    slideItem.addEventListener('click', () => {
+                        this.goToSlide(index);
+                    });
+                    
+                    // 编辑标题
+                    const editBtn = slideItem.querySelector('.edit-slide');
+                    editBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const newTitle = prompt('请输入新标题:', slide.title);
+                        if (newTitle) {
+                            slide.title = newTitle;
+                            this.renderSlideList();
+                        }
+                    });
+                    
+                    // 删除幻灯片
+                    const deleteBtn = slideItem.querySelector('.delete-slide');
+                    deleteBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        this.removeSlide(index);
+                    });
+                    
+                    slideList.appendChild(slideItem);
+                });
+            }
+            
+            // 修改模式切换方法
+            toggleEditMode() {
+                // 在切换模式前先保存修改
+                if (this.isEditMode) {
+                    this.saveToLocalStorage();
+                }
+                
+                this.isEditMode = !this.isEditMode;
+                
+                const toolbar = $('#toolbar');
+                const editModeBtn = $('#edit-mode');
+                const presentModeBtn = $('#present-mode');
+                
+                if (this.isEditMode) {
+                    editModeBtn.classList.add('active');
+                    presentModeBtn.classList.remove('active');
+                    toolbar.style.display = 'flex';
+                    this.enableEditMode();
+                    this.renderSlides();
+                } else {
+                    presentModeBtn.classList.add('active');
+                    editModeBtn.classList.remove('active');
+                    toolbar.style.display = 'none';
+                    this.disableEditMode();
+                    this.renderSlides();
+                }
+            }
+
+            enableEditMode() {
+                try {
+                    this.editManager.enableGlobalEdit();
+                    // 移除直接操作元素的代码，因为renderSlides已经通过editManager.registerElement处理了
+                } catch (error) {
+                    console.error('启用编辑模式时出错:', error);
+                    showNotification('切换编辑模式时发生错误', 'error');
+                }
+            }
+
+            disableEditMode() {
+                try {
+                    this.editManager.disableGlobalEdit();
+                    // 移除直接操作元素的代码，editManager会处理
+                } catch (error) {
+                    console.error('禁用编辑模式时出错:', error);
+                    showNotification('切换放映模式时发生错误', 'error');
+                }
+            }
+            
+            // 添加元素到当前幻灯片
+            // 在添加元素时设置默认位置和尺寸
+            addElement(type) {
+                this.createSnapshot();
+                const currentSlide = this.slides[this.currentSlideIndex];
+                let newElement;
+                
+                switch (type) {
+                    case 'text':
+                        newElement = new TextElement({
+                            title: '新文本标题',
+                            body: '这里是文本内容...'
+                        });
+                        // 设置默认尺寸和位置
+                        newElement.size = { width: 300, height: 150 };
+                        newElement.position = { x: 100, y: 100 };
+                        break;
+                    case 'image':
+                        newElement = new ImageElement({
+                            src: 'https://via.placeholder.com/400x300',
+                            alt: '示例图片'
+                        });
+                        newElement.size = { width: 300, height: 200 };
+                        newElement.position = { x: 100, y: 100 };
+                        break;
+                    case 'chart':
+                        newElement = new ChartElement({
+                            chartOption: {
+                                title: { text: '新图表' },
+                                tooltip: {},
+                                xAxis: { data: ['A', 'B', 'C', 'D', 'E'] },
+                                yAxis: {},
+                                series: [{ name: '数据', type: 'bar', data: [10, 20, 15, 25, 18] }]
+                            }
+                        });
+                        newElement.size = { width: 500, height: 300 };
+                        newElement.position = { x: 50, y: 100 };
+                        break;
+                    case 'list':
+                        newElement = new ListElement({
+                            title: '新列表',
+                            items: ['项目1', '项目2', '项目3']
+                        });
+                        newElement.size = { width: 300, height: 200 };
+                        newElement.position = { x: 100, y: 100 };
+                        break;
+                }
+                
+                if (newElement) {
+                    currentSlide.addElement(newElement);
+                    
+                    // 直接调用完整的渲染方法，确保元素正确显示
+                    this.renderSlides();
+                }
+            }
+            
+            async saveAsPPT() {
+                try {
+                    // 检查必要的库是否加载
+                    if (typeof html2canvas === 'undefined' || typeof PptxGenJS === 'undefined') {
+                        alert('正在加载必要的库，请稍后再试...');
+                        // 动态加载库
+                        await Promise.all([
+                            new Promise(resolve => {
+                                // 检查库是否已加载
+                                if (typeof html2canvas !== 'undefined') {
+                                    resolve();
+                                    return;
+                                }
+                                const script = document.createElement('script');
+                                script.src = 'https://html2canvas.hertzen.com/dist/html2canvas.min.js';
+                                script.onload = resolve;
+                                document.head.appendChild(script);
+                            }),
+                            new Promise(resolve => {
+                                // 检查库是否已加载
+                                if (typeof PptxGenJS !== 'undefined') {
+                                    resolve();
+                                    return;
+                                }
+                                const script = document.createElement('script');
+                                script.src = 'https://unpkg.com/pptxgenjs@3.12.0/dist/pptxgenjs.min.js';
+                                script.onload = resolve;
+                                document.head.appendChild(script);
+                            })
+                        ]);
+                        // 延迟后重试，但避免无限递归
+                        setTimeout(() => {
+                            if (typeof html2canvas !== 'undefined' && typeof PptxGenJS !== 'undefined') {
+                                this.saveAsPPT();
+                            } else {
+                                alert('必要的库加载失败，请刷新页面重试。');
+                            }
+                        }, 100);
+                        return;
+                        return;
+                    }
+                     
+                    // 创建PPTX文档
+                    const pptx = new PptxGenJS();
+                     
+                    // 保存当前状态
+                    const currentSlideIndex = this.currentSlideIndex;
+                     
+                    // 为每张幻灯片创建PPT页面
+                    for (let i = 0; i < this.slides.length; i++) {
+                        this.goToSlide(i);
+                         
+                        // 等待幻灯片渲染完成
+                        await new Promise(resolve => setTimeout(resolve, 300));
+                         
+                        // 获取当前幻灯片元素
+                        const slideElement = document.querySelector(`.slide:nth-child(${i + 1})`);
+                         
+                        // 使用html2canvas将幻灯片转换为图片
+                        const canvas = await html2canvas(slideElement, {
+                            scale: 2, // 高分辨率
+                            logging: false,
+                            useCORS: true // 允许跨域图片
+                        });
+                         
+                        // 将canvas转换为base64
+                        const imgData = canvas.toDataURL('image/png');
+                         
+                        // 添加新的PPT幻灯片
+                        const pptSlide = pptx.addSlide();
+                         
+                        // 设置幻灯片标题
+                        pptSlide.addText(this.slides[i].title, {
+                            x: 1, y: 1, w: '80%', h: 1,
+                            fontSize: 28,
+                            bold: true,
+                            color: '000000'
+                        });
+                         
+                        // 添加图片到幻灯片
+                        pptSlide.addImage({
+                            data: imgData,
+                            x: 0.5, y: 1.5, w: 9, h: 6
+                        });
+                    }
+                     
+                    // 恢复原来的幻灯片
+                    this.goToSlide(currentSlideIndex);
+                     
+                    // 下载PPT文件
+                    pptx.writeFile({ fileName: 'AI_PPT_演示文稿.pptx' });
+                } catch (error) {
+                    console.error('导出PPT失败:', error);
+                    alert('导出PPT失败，请重试或检查控制台错误信息。');
+                }
+            }
+            
+            bindEvents() {
+                // 导航按钮事件映射
+                const navButtons = {
+                    'prev-slide': this.prevSlide.bind(this),
+                    'next-slide': this.nextSlide.bind(this),
+                    'save-ppt': this.saveAsPPT.bind(this),
+                    'fullscreen': this.toggleFullscreen.bind(this),
+                    'add-slide': this.addSlide.bind(this),
+                    'delete-slide': () => this.removeSlide(this.currentSlideIndex),
+                    'present-mode': () => {
+                        if (this.isEditMode) {
+                            this.toggleEditMode();
+                        }
+                    },
+                    'edit-mode': () => {
+                        if (!this.isEditMode) {
+                            this.toggleEditMode();
+                        }
+                    }
+                };
+                
+                // 绑定导航按钮事件
+                Object.entries(navButtons).forEach(([id, handler]) => {
+                    const element = $(`#${id}`);
+                    if (element) {
+                        element.addEventListener('click', handler);
+                    }
+                });
+                
+                // 工具栏按钮事件映射
+                const toolbarButtons = {
+                    'add-text': () => this.addElement('text'),
+                    'add-image': () => this.addElement('image'),
+                    'add-chart': () => this.addElement('chart'),
+                    'add-list': () => this.addElement('list')
+                };
+                
+                // 绑定工具栏按钮事件
+                Object.entries(toolbarButtons).forEach(([id, handler]) => {
+                    const element = $(`#${id}`);
+                    if (element) {
+                        element.addEventListener('click', handler);
+                    }
+                });
+                
+                // 绑定键盘事件
+                document.addEventListener('keydown', (e) => {
+                    const isEditing = e.target.isContentEditable || 
+                     e.target.tagName === 'INPUT' || 
+                     e.target.tagName === 'TEXTAREA';
+    
+                    if (!isEditing) {
+                        if (e.key === 'ArrowRight') {
+                            e.preventDefault();
+                            this.nextSlide();
+                        } else if (e.key === 'ArrowLeft') {
+                            e.preventDefault();
+                            this.prevSlide();
+                        } else if (e.key === 'Escape') {
+                            e.preventDefault();
+                            if (this.isEditMode) {
+                                this.toggleEditMode();
+                            }
+                        }
+                    }
+
+
+                    
+                    
+                    // Ctrl+Z 撤销
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+                        e.preventDefault();
+                        this.undo();
+                    }
+                    
+                    // Ctrl+Shift+Z 或 Ctrl+Y 重做
+                    if (((e.ctrlKey || e.metaKey) && e.key === 'z' && e.shiftKey) || 
+                        ((e.ctrlKey || e.metaKey) && e.key === 'y')) {
+                        e.preventDefault();
+                        this.redo();
+                    }
+                    
+                    // 添加Ctrl+S快捷键保存
+                    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                        e.preventDefault();
+                        this.saveToLocalStorage();
+                        // 可以添加一个临时提示
+                        const saveIndicator = document.createElement('div');
+                        saveIndicator.textContent = '已保存';
+                        saveIndicator.style.position = 'fixed';
+                        saveIndicator.style.bottom = '20px';
+                        saveIndicator.style.right = '20px';
+                        saveIndicator.style.padding = '10px 20px';
+                        saveIndicator.style.backgroundColor = '#2ecc71';
+                        saveIndicator.style.color = 'white';
+                        saveIndicator.style.borderRadius = '5px';
+                        saveIndicator.style.zIndex = '9999';
+                        document.body.appendChild(saveIndicator);
+                        
+                        setTimeout(() => {
+                            saveIndicator.remove();
+                        }, 2000);
+                    }
+                });
+                
+                // 添加全屏状态变化事件监听
+                // 添加全屏状态变化事件监听
+                document.addEventListener('fullscreenchange', () => {
+                    if (!document.fullscreenElement) {
+                        document.body.classList.remove('fullscreen');
+                        // 恢复导航按钮显示
+                        document.querySelector('.nav-buttons').style.display = 'flex';
+                    }
+                });
+                
+                // 绑定元素面板事件
+                const elementPanel = $('#element-panel');
+                const elementTypes = $$('.element-type', elementPanel);
+                
+                elementTypes.forEach(type => {
+                    type.addEventListener('click', () => {
+                        const elementType = type.getAttribute('data-type');
+                        this.addElement(elementType);
+                        elementPanel.classList.remove('show');
+                    });
+                });
+                
+                // 绑定上下文菜单事件
+                const contextMenu = $('#context-menu');
+                const contextItems = $$('.context-item', contextMenu);
+                
+                contextItems.forEach(item => {
+                    item.addEventListener('click', () => {
+                        const action = item.getAttribute('data-action');
+                        const elementId = contextMenu.getAttribute('data-element-id');
+                        const element = this.editManager.elements.get(elementId);
+                        
+                        if (element) {
+                            switch (action) {
+                                case 'edit':
+                                    // 编辑内容已在编辑模式下启用
+                                    break;
+                                case 'duplicate':
+                                    const duplicated = element.duplicate();
+                                    this.slides[this.currentSlideIndex].addElement(duplicated);
+                                    this.renderSlides();
+                                    break;
+                                case 'delete':
+                                    if (element.delete()) {
+                                        this.slides[this.currentSlideIndex].removeElement(element.id);
+                                    }
+                                    break;
+                                case 'bring-to-front':
+                                    element.bringToFront();
+                                    break;
+                                case 'send-to-back':
+                                    element.sendToBack();
+                                    break;
+                            }
+                            
+                            // 添加字体大小设置
+                            if (action.startsWith('set-font-size-')) {
+                                const size = action.split('-')[3];
+                                if (element.type === 'text' || element.type === 'list') {
+                                    // 假设我们在点击时知道是标题还是正文需要修改
+                                    // 实际应用中可能需要分别提供标题和正文的字体大小设置
+                                    if (action.includes('title')) {
+                                        if (element.setFontSize) {
+                                            element.setFontSize('title', size + 'px');
+                                        }
+                                    } else {
+                                        if (element.setFontSize) {
+                                            element.setFontSize('body', size + 'px');
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        
+                        contextMenu.classList.remove('show');
+                    });
+                });
+                
+                // 点击幻灯片空白处显示元素面板
+                $('#presentation-area').addEventListener('click', (e) => {
+                    if (this.isEditMode && e.target.classList.contains('slide-body')) {
+                        const rect = e.target.getBoundingClientRect();
+                        elementPanel.style.left = (e.clientX - rect.left) + 'px';
+                        elementPanel.style.top = (e.clientY - rect.top) + 'px';
+                        elementPanel.classList.add('show');
+                    }
+                });
+                
+                // 点击其他地方隐藏元素面板
+                document.addEventListener('click', (e) => {
+                    if (!elementPanel.contains(e.target) && !e.target.classList.contains('toolbar-btn')) {
+                        elementPanel.classList.remove('show');
+                    }
+                });
+                
+                // 添加主题切换按钮
+                const themeButton = document.createElement('button');
+                themeButton.className = 'toolbar-btn';
+                themeButton.textContent = '切换主题';
+                themeButton.id = 'theme-btn';
+                
+                // 添加到工具栏
+                const toolbar = $('#toolbar');
+                toolbar.appendChild(themeButton);
+                
+                // 创建主题选择面板
+                const themePanel = document.createElement('div');
+                themePanel.className = 'element-panel';
+                themePanel.id = 'theme-panel';
+                themePanel.style.display = 'none';
+                
+                // 添加主题选项
+                Object.keys(this.themes).forEach(themeName => {
+                    const themeOption = document.createElement('div');
+                    themeOption.className = 'element-type';
+                    themeOption.setAttribute('data-theme', themeName);
+                    themeOption.textContent = themeName.charAt(0).toUpperCase() + themeName.slice(1);
+                    themePanel.appendChild(themeOption);
+                });
+                
+                // 添加到应用
+                $('#app').appendChild(themePanel);
+                
+                // 绑定主题按钮点击事件
+                themeButton.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const rect = e.target.getBoundingClientRect();
+                    themePanel.style.left = rect.left + 'px';
+                    themePanel.style.top = rect.bottom + 5 + 'px';
+                    themePanel.classList.toggle('show');
+                });
+                
+                // 绑定主题选择事件
+                $$('.element-type', themePanel).forEach(option => {
+                    option.addEventListener('click', () => {
+                        const themeName = option.getAttribute('data-theme');
+                        this.applyTheme(themeName);
+                        themePanel.classList.remove('show');
+                    });
+                });
+                
+                // 点击其他地方隐藏主题面板
+                document.addEventListener('click', (e) => {
+                    if (!themePanel.contains(e.target) && e.target.id !== 'theme-btn') {
+                        themePanel.classList.remove('show');
+                    }
+                });
+            }
+            
+            // 全屏切换方法
+            toggleFullscreen() {
+                if (!document.fullscreenElement) {
+                    // 进入全屏
+                    const presentationArea = document.getElementById('presentation-area');
+                     
+                    if (presentationArea.requestFullscreen) {
+                        presentationArea.requestFullscreen();
+                    } else if (presentationArea.webkitRequestFullscreen) {
+                        presentationArea.webkitRequestFullscreen();
+                    } else if (presentationArea.msRequestFullscreen) {
+                        presentationArea.msRequestFullscreen();
+                    }
+                     
+                    document.body.classList.add('fullscreen');
+                     
+                    // 隐藏导航按钮
+                    document.querySelector('.nav-buttons').style.display = 'none';
+                     
+                    // 确保幻灯片在全屏模式下正确显示
+                    setTimeout(() => {
+                        this.renderSlides();
+                    }, 100);
+                } else {
+                    // 退出全屏
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    } else if (document.webkitExitFullscreen) {
+                        document.webkitExitFullscreen();
+                    } else if (document.msExitFullscreen) {
+                        document.msExitFullscreen();
+                    }
+                     
+                    document.body.classList.remove('fullscreen');
+                     
+                    // 显示导航按钮
+                    document.querySelector('.nav-buttons').style.display = 'flex';
+                     
+                    // 恢复正常显示
+                    setTimeout(() => {
+                        this.renderSlides();
+                    }, 100);
+                }
+            }
+            // 添加JSON导入功能到界面
+            addJSONImportFeature() {
+                // 创建隐藏的文件输入
+                const fileInput = document.createElement('input');
+                fileInput.type = 'file';
+                fileInput.accept = '.json';
+                fileInput.style.display = 'none';
+                fileInput.id = 'json-file-input';
+                document.body.appendChild(fileInput);
+                
+                // 绑定导入按钮事件
+                document.getElementById('import-json').addEventListener('click', () => {
+                    fileInput.click();
+                });
+                
+                // 处理文件选择
+                fileInput.addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            try {
+                                const jsonData = JSON.parse(event.target.result);
+                                this.importFromJSON(jsonData);
+                                showNotification('JSON设计导入成功！', 'success');
+                            } catch (error) {
+                                console.error('JSON解析错误:', error);
+                                showNotification('JSON文件格式错误，请检查文件内容', 'error');
+                            }
+                        };
+                        reader.onerror = () => {
+                            showNotification('文件读取失败', 'error');
+                        };
+                        reader.readAsText(file);
+                    }
+                    
+                    // 重置文件输入，允许选择同一个文件再次导入
+                    fileInput.value = '';
+                });
+            }
+            
+            // 从JSON数据导入设计
+            importFromJSON(jsonData) {
+                try {
+                    // 创建历史快照
+                    this.createSnapshot();
+                    
+                    // 清空当前内容
+                    this.slides = [];
+                    this.editManager.cleanup();
+                    
+                    // 1. 注册自定义元素
+                    if (jsonData.customElements && Array.isArray(jsonData.customElements)) {
+                        this.registerCustomElements(jsonData.customElements);
+                    }
+                    
+                    // 2. 注入自定义样式
+                    if (jsonData.styles) {
+                        this.injectCustomStyles(jsonData.styles);
+                    }
+                    
+                    // 3. 创建幻灯片
+                    if (jsonData.slides && Array.isArray(jsonData.slides)) {
+                        this.createSlidesFromJSON(jsonData.slides);
+                    }
+                    
+                    // 4. 设置标题
+                    if (jsonData.title) {
+                        document.title = jsonData.title + ' - AI PPT生成系统';
+                    }
+                    
+                    // 5. 切换到第一张幻灯片
+                    this.currentSlideIndex = 0;
+                    this.renderSlides();
+                    this.renderSlideList();
+                    
+                    // 6. 保存到本地存储
+                    this.saveToLocalStorage();
+                    
+                    console.log('JSON导入成功:', jsonData);
+                    return true;
+                    
+                } catch (error) {
+                    console.error('JSON导入失败:', error);
+                    showNotification('导入失败: ' + error.message, 'error');
+                    return false;
+                }
+            }
+            
+            // 注册自定义元素
+            registerCustomElements(customElements) {
+                customElements.forEach(elementDef => {
+                    // 动态创建元素类
+                    const CustomElementClass = class extends CustomElement {
+                        constructor(content, style = {}) {
+                            super(elementDef.type, content, style);
+                            this.template = elementDef.template;
+                        }
+                        
+                        render() {
+                            let html = this.template;
+                            
+                            // 替换模板变量
+                            if (this.content) {
+                                Object.keys(this.content).forEach(key => {
+                                    const placeholder = `{{${key}}}`;
+                                    const value = this.content[key] || '';
+                                    html = html.replace(new RegExp(placeholder, 'g'), value);
+                                });
+                            }
+                            
+                            return `
+                                <div id="${this.id}" 
+                                    style="position: absolute; left: ${this.position.x}px; top: ${this.position.y}px;
+                                            width: ${this.size.width || '300px'}; height: ${this.size.height || '200px'};
+                                            transform: rotate(${this.rotation}deg); z-index: ${this.zIndex};">
+                                    ${html}
+                                </div>
+                            `;
+                        }
+                    };
+                    
+                    // 注册到元素注册表
+                    ElementRegistry.registerElementType(elementDef.type, CustomElementClass);
+                });
+            }
+            
+            // 注入自定义样式
+            injectCustomStyles(css) {
+                // 移除已存在的自定义样式
+                const existingStyle = document.getElementById('custom-styles');
+                if (existingStyle) {
+                    existingStyle.remove();
+                }
+                
+                // 创建新的样式元素
+                const styleElement = document.createElement('style');
+                styleElement.id = 'custom-styles';
+                styleElement.textContent = css;
+                document.head.appendChild(styleElement);
+            }
+            
+            // 从JSON数据创建幻灯片
+            createSlidesFromJSON(slidesData) {
+                slidesData.forEach(slideConfig => {
+                    const slide = new Slide(slideConfig.title || '未命名幻灯片');
+                    
+                    if (slideConfig.elements && Array.isArray(slideConfig.elements)) {
+                        slideConfig.elements.forEach(elementConfig => {
+                            const element = ElementRegistry.createElement(
+                                elementConfig.type,
+                                elementConfig.content || {},
+                                elementConfig.style || {}
+                            );
+                            
+                            // 设置位置和尺寸
+                            if (elementConfig.position) {
+                                element.position = elementConfig.position;
+                            }
+                            if (elementConfig.size) {
+                                element.size = elementConfig.size;
+                            }
+                            if (elementConfig.rotation) {
+                                element.rotation = elementConfig.rotation;
+                            }
+                            
+                            slide.addElement(element);
+                        });
+                    }
+                    
+                    this.slides.push(slide);
+                });
+            }
+            
+            // 修改现有的addElement方法，使用ElementRegistry
+            addElement(type) {
+                this.createSnapshot();
+                const currentSlide = this.slides[this.currentSlideIndex];
+                let newElement;
+                
+                // 特殊处理图片和图表类型
+                if (type === 'image') {
+                    // 创建文件选择对话框
+                    const fileInput = document.createElement('input');
+                    fileInput.type = 'file';
+                    fileInput.accept = 'image/*';
+                    fileInput.style.display = 'none';
+                    
+                    fileInput.addEventListener('change', (e) => {
+                        if (e.target.files && e.target.files[0]) {
+                            const file = e.target.files[0];
+                            const reader = new FileReader();
+                            
+                            reader.onload = (event) => {
+                                newElement = ElementRegistry.createElement('image', {
+                                    src: event.target.result,
+                                    alt: file.name
+                                });
+                                newElement.size = { width: 300, height: 200 };
+                                newElement.position = { x: 100, y: 100 };
+                                
+                                if (newElement) {
+                                    currentSlide.addElement(newElement);
+                                    this.renderSlides();
+                                }
+                            };
+                            
+                            reader.readAsDataURL(file);
+                        }
+                        
+                        // 移除文件输入元素
+                        document.body.removeChild(fileInput);
+                    });
+                    
+                    document.body.appendChild(fileInput);
+                    fileInput.click();
+                    return; // 不执行后续代码，等待用户选择文件
+                } else if (type === 'chart') {
+                    // 显示图表类型和数据输入对话框
+                    this.showChartDialog(currentSlide);
+                    return; // 不执行后续代码，等待用户选择图表类型和数据
+                }
+                
+                // 其他元素类型的默认处理
+                switch (type) {
+                    case 'text':
+                        newElement = ElementRegistry.createElement('text', {
+                            title: '新文本标题',
+                            body: '这里是文本内容...'
+                        });
+                        newElement.size = { width: 300, height: 150 };
+                        newElement.position = { x: 100, y: 100 };
+                        break;
+                    case 'list':
+                        newElement = ElementRegistry.createElement('list', {
+                            title: '新列表',
+                            items: ['项目1', '项目2', '项目3']
+                        });
+                        newElement.size = { width: 300, height: 200 };
+                        newElement.position = { x: 100, y: 100 };
+                        break;
+                    default:
+                        // 如果是自定义类型，使用默认配置
+                        newElement = ElementRegistry.createElement(type, {});
+                        newElement.size = { width: 200, height: 200 };
+                        newElement.position = { x: 100, y: 100 };
+                }
+                
+                if (newElement) {
+                    currentSlide.addElement(newElement);
+                    this.renderSlides();
+                }
+            }
+            
+            // 添加图表对话框方法
+            showChartDialog(currentSlide) {
+                // 创建对话框容器
+                const dialogContainer = document.createElement('div');
+                dialogContainer.style.position = 'fixed';
+                dialogContainer.style.top = '0';
+                dialogContainer.style.left = '0';
+                dialogContainer.style.width = '100%';
+                dialogContainer.style.height = '100%';
+                dialogContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                dialogContainer.style.display = 'flex';
+                dialogContainer.style.alignItems = 'center';
+                dialogContainer.style.justifyContent = 'center';
+                dialogContainer.style.zIndex = '1000';
+                
+                // 创建对话框内容
+                const dialogContent = document.createElement('div');
+                dialogContent.style.backgroundColor = 'white';
+                dialogContent.style.padding = '30px';
+                dialogContent.style.borderRadius = '8px';
+                dialogContent.style.width = '500px';
+                dialogContent.style.maxWidth = '90vw';
+                
+                dialogContent.innerHTML = `
+                    <h3 style="margin-bottom: 20px;">创建图表</h3>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 5px;">图表类型：</label>
+                        <select id="chart-type" style="width: 100%; padding: 8px;">
+                            <option value="bar">柱状图</option>
+                            <option value="line">折线图</option>
+                            <option value="pie">饼图</option>
+                            <option value="scatter">散点图</option>
+                        </select>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 5px;">图表标题：</label>
+                        <input type="text" id="chart-title" value="新图表" style="width: 100%; padding: 8px;">
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 5px;">数据输入方式：</label>
+                        <select id="data-input-type" style="width: 100%; padding: 8px;">
+                            <option value="manual">手动输入</option>
+                            <option value="csv">上传CSV文件</option>
+                        </select>
+                    </div>
+                    
+                    <div id="manual-data-input" style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 5px;">X轴数据（用逗号分隔）：</label>
+                        <input type="text" id="x-axis-data" value="A,B,C,D,E" style="width: 100%; padding: 8px;">
+                        
+                        <label style="display: block; margin-top: 10px; margin-bottom: 5px;">Y轴数据（用逗号分隔）：</label>
+                        <input type="text" id="y-axis-data" value="10,20,15,25,18" style="width: 100%; padding: 8px;">
+                    </div>
+                    
+                    <div id="file-upload-input" style="margin-bottom: 20px; display: none;">
+                        <label style="display: block; margin-bottom: 5px;">选择CSV文件：</label>
+                        <input type="file" id="csv-file" accept=".csv" style="width: 100%;">
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                        <button id="cancel-chart" style="padding: 10px 20px; background: #95a5a6; color: white; border: none; border-radius: 4px; cursor: pointer;">取消</button>
+                        <button id="create-chart" style="padding: 10px 20px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer;">创建</button>
+                    </div>
+                `;
+                
+                dialogContainer.appendChild(dialogContent);
+                document.body.appendChild(dialogContainer);
+                
+                // 切换数据输入方式
+                const dataInputType = dialogContent.querySelector('#data-input-type');
+                const manualDataInput = dialogContent.querySelector('#manual-data-input');
+                const fileUploadInput = dialogContent.querySelector('#file-upload-input');
+                
+                dataInputType.addEventListener('change', () => {
+                    if (dataInputType.value === 'manual') {
+                        manualDataInput.style.display = 'block';
+                        fileUploadInput.style.display = 'none';
+                    } else {
+                        manualDataInput.style.display = 'none';
+                        fileUploadInput.style.display = 'block';
+                    }
+                });
+                
+                // 取消按钮事件
+                const cancelButton = dialogContent.querySelector('#cancel-chart');
+                cancelButton.addEventListener('click', () => {
+                    document.body.removeChild(dialogContainer);
+                });
+                
+                // 创建按钮事件
+                const createButton = dialogContent.querySelector('#create-chart');
+                createButton.addEventListener('click', () => {
+                    const chartType = dialogContent.querySelector('#chart-type').value;
+                    const chartTitle = dialogContent.querySelector('#chart-title').value;
+                    
+                    let chartOption;
+                    
+                    if (dataInputType.value === 'manual') {
+                        // 手动输入数据
+                        const xAxisData = dialogContent.querySelector('#x-axis-data').value.split(',').map(item => item.trim());
+                        const yAxisData = dialogContent.querySelector('#y-axis-data').value.split(',').map(item => parseFloat(item.trim()) || 0);
+                        
+                        chartOption = {
+                            title: { text: chartTitle },
+                            tooltip: {},
+                            xAxis: { data: xAxisData },
+                            yAxis: {},
+                            series: [{ name: '数据', type: chartType, data: yAxisData }]
+                        };
+                        
+                        // 饼图需要特殊处理数据格式
+                        if (chartType === 'pie') {
+                            chartOption.series[0].data = xAxisData.map((name, index) => ({
+                                name: name,
+                                value: yAxisData[index]
+                            }));
+                            delete chartOption.xAxis;
+                            delete chartOption.yAxis;
+                        }
+                        
+                        // 创建图表元素
+                        this.createChartElement(currentSlide, chartOption);
+                    } else {
+                        // 上传CSV文件
+                            const csvFileInput = dialogContent.querySelector('#csv-file');
+                            if (csvFileInput.files && csvFileInput.files[0]) {
+                                const file = csvFileInput.files[0];
+                                const reader = new FileReader();
+                                  
+                                // 设置编码为UTF-8，解决中文乱码问题
+                                reader.onload = (event) => {
+                                    try {
+                                        // 改进的CSV解析逻辑
+                                        const csvData = event.target.result;
+                                        // 使用更健壮的CSV解析方法
+                                        const { headers, rows } = this.parseCSV(csvData);
+                                        const xAxisData = [];
+                                        const yAxisData = [];
+                                          
+                                        // 提取X轴和Y轴数据
+                                        rows.forEach(row => {
+                                            if (row.length >= 2 && row[0]) {
+                                                xAxisData.push(row[0]);
+                                                yAxisData.push(parseFloat(row[1]) || 0);
+                                            }
+                                        });
+                                          
+                                        chartOption = {
+                                            title: { text: chartTitle },
+                                            tooltip: {},
+                                            xAxis: { data: xAxisData },
+                                            yAxis: {},
+                                            series: [{ name: headers[1] || '数据', type: chartType, data: yAxisData }]
+                                        };
+                                          
+                                        // 饼图需要特殊处理数据格式
+                                        if (chartType === 'pie') {
+                                            chartOption.series[0].data = xAxisData.map((name, index) => ({
+                                                name: name,
+                                                value: yAxisData[index]
+                                            }));
+                                            delete chartOption.xAxis;
+                                            delete chartOption.yAxis;
+                                        }
+                                          
+                                        // 创建图表元素
+                                        this.createChartElement(currentSlide, chartOption);
+                                } catch (error) {
+                                        showNotification('CSV文件解析失败: ' + error.message, 'error');
+                                    }
+                                };
+                                  
+                                // 读取文件时指定编码
+                                reader.readAsText(file, 'UTF-8');
+                        } else {
+                            showNotification('请选择CSV文件', 'error');
+                            return;
+                        }
+                    }
+                    
+                    // 移除对话框
+                    document.body.removeChild(dialogContainer);
+                });
+            }
+            
+            // 创建图表元素辅助方法
+            createChartElement(currentSlide, chartOption) {
+                const newElement = ElementRegistry.createElement('chart', {
+                    chartOption: chartOption
+                });
+                newElement.size = { width: 500, height: 300 };
+                newElement.position = { x: 50, y: 100 };
+                  
+                if (newElement) {
+                    currentSlide.addElement(newElement);
+                    this.renderSlides();
+                      
+                    // 延迟渲染图表，确保DOM已更新
+                    setTimeout(() => {
+                        newElement.renderChart();
+                    }, 100);
+                }
+            }
+            
+            // 添加健壮的CSV解析方法
+            parseCSV(csvText) {
+                const lines = csvText.split('\n').filter(line => line.trim());
+                if (lines.length === 0) {
+                    throw new Error('CSV文件为空');
+                }
+                
+                // 假设第一行是表头
+                const headers = lines[0].split(',').map(item => item.trim());
+                
+                // 解析数据行，处理引号包裹的字段
+                const rows = [];
+                for (let i = 1; i < lines.length; i++) {
+                    const line = lines[i];
+                    // 简单处理带引号的字段
+                    const row = [];
+                    let current = '';
+                    let inQuotes = false;
+                    
+                    for (let j = 0; j < line.length; j++) {
+                        const char = line[j];
+                        
+                        if (char === '"') {
+                            inQuotes = !inQuotes;
+                        } else if (char === ',' && !inQuotes) {
+                            row.push(current.trim());
+                            current = '';
+                        } else {
+                            current += char;
+                        }
+                    }
+                    
+                    // 添加最后一个字段
+                    row.push(current.trim());
+                    rows.push(row);
+                }
+                
+                return { headers, rows };
+            }
+            
+            // 重新渲染当前幻灯片（优化性能）
+            renderCurrentSlide() {
+                const presentationArea = document.getElementById('presentation-area');
+                const currentSlideElement = presentationArea.querySelector(`.slide:nth-child(${this.currentSlideIndex + 1})`);
+                
+                if (currentSlideElement) {
+                    const slideBody = currentSlideElement.querySelector('.slide-body');
+                    slideBody.innerHTML = '';
+                    
+                    const currentSlide = this.slides[this.currentSlideIndex];
+                    currentSlide.elements.forEach(element => {
+                        const elementHTML = element.render();
+                        const tempDiv = document.createElement('div');
+                        tempDiv.innerHTML = elementHTML;
+                        slideBody.appendChild(tempDiv.firstElementChild);
+                        
+                        // 注册元素到编辑管理器
+                        this.editManager.registerElement(element);
+                    });
+                    
+                    // 渲染图表
+                    setTimeout(() => {
+                        currentSlide.renderElements();
+                    }, 100);
+                }
+            }
+        }
+
+        // 初始化PPT管理器
+        document.addEventListener('DOMContentLoaded', () => {
+                const pptManager = new PPTManager();
+            
+            // 添加更多示例幻灯片
+            const secondSlide = pptManager.addSlide('数据可视化');
+            secondSlide.addElement(new ChartElement({
+                chartOption: {
+                    title: { text: '销售数据统计' },
+                    tooltip: {},
+                    legend: { data: ['销量'] },
+                    xAxis: { data: ['1月', '2月', '3月', '4月', '5月', '6月'] },
+                    yAxis: {},
+                    series: [{ name: '销量', type: 'line', data: [120, 200, 150, 80, 70, 110] }]
+                }
+            }));
+            
+            const thirdSlide = pptManager.addSlide('产品介绍');
+            thirdSlide.addElement(new ImageElement({
+                src: 'https://via.placeholder.com/600x400',
+                alt: '产品图片'
+            }));
+            
+            thirdSlide.addElement(new TextElement({
+                title: '产品特点',
+                body: '我们的产品具有创新设计、高性能和易用性等特点，能够满足各种用户需求。'
+            }));
+            
+            // 重新渲染幻灯片
+            pptManager.renderSlides();
+            
+            // 可选：将必要的API暴露给全局
+            window.pptApp = {
+                addSlide: pptManager.addSlide.bind(pptManager),
+                savePresentation: pptManager.saveAsPPT.bind(pptManager)
+            };
+        });
+        })();
+    </script>
+</body>
+</html>
