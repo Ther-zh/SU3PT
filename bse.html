@@ -6,7 +6,8 @@
     <title>AI PPT生成系统</title>
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-    <script src="https://unpkg.com/pptxgenjs@3.12.0/dist/pptxgenjs.min.js"></script>
+    <!-- PPTXGenJS库将在需要时动态加载，使用更可靠的CDN源 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
       :root {
         --primary-color: #3498db;
@@ -145,6 +146,11 @@
 
       .save-btn {
         background-color: #2ecc71;
+        color: white;
+      }
+
+      .export-btn {
+        background-color: #9b59b6;
         color: white;
       }
 
@@ -545,6 +551,13 @@
             style="background: #9b59b6"
           >
             导入JSON设计
+          </button>
+          <!-- 添加导出JSON按钮 -->
+          <button
+            class="export-btn"
+            id="export-json"
+          >
+            导出JSON设计
           </button>
         </div>
       </div>
@@ -2749,52 +2762,133 @@
                   }
               }
 
-              async saveAsPPT() {
+              // 保存为PPT或PDF功能
+              async savePresentation() {
                   try {
-                      if (typeof html2canvas === "undefined" || typeof PptxGenJS === "undefined") {
-                          alert("正在加载必要的库，请稍后再试...");
+                      // 显示导出选项对话框
+                      const exportType = await this.showExportOptionsDialog();
+                      if (!exportType) return; // 用户取消
 
-                          await Promise.all([
-                              new Promise((resolve) => {
-                                  if (typeof html2canvas !== "undefined") {
-                                      resolve();
-                                      return;
-                                  }
+                      if (exportType === 'pdf') {
+                          // PDF导出
+                          await this.exportToPDF();
+                      } else if (exportType === 'pptx') {
+                          // PPT导出
+                          await this.saveAsPPT();
+                      }
+                  } catch (error) {
+                      console.error("导出失败:", error);
+                      alert("导出失败，请重试或检查控制台错误信息。");
+                  }
+              }
+
+              // 显示导出选项对话框
+              showExportOptionsDialog() {
+                  return new Promise((resolve) => {
+                      // 创建模态框
+                      const modal = document.createElement('div');
+                      modal.style.cssText = `
+                          position: fixed;
+                          top: 0;
+                          left: 0;
+                          width: 100%;
+                          height: 100%;
+                          background: rgba(0,0,0,0.5);
+                          display: flex;
+                          align-items: center;
+                          justify-content: center;
+                          z-index: 10000;
+                      `;
+
+                      modal.innerHTML = `
+                          <div style="background: white; padding: 20px; border-radius: 8px; width: 400px; max-width: 90vw;">
+                              <h3 style="margin-bottom: 20px;">选择导出格式</h3>
+                              <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+                                  <button data-type="pptx" style="padding: 15px; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; background-color: #f8f9fa;">
+                                      保存为PPT
+                                  </button>
+                                  <button data-type="pdf" style="padding: 15px; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; background-color: #f8f9fa;">
+                                      保存为PDF
+                                  </button>
+                              </div>
+                              <button id="cancel-export" style="padding: 8px 16px; background: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer; width: 100%;">
+                                  取消
+                              </button>
+                          </div>
+                      `;
+
+                      document.body.appendChild(modal);
+
+                      // 处理导出类型选择
+                      modal.querySelectorAll('button[data-type]').forEach(btn => {
+                          btn.addEventListener('click', () => {
+                              const type = btn.getAttribute('data-type');
+                              document.body.removeChild(modal);
+                              resolve(type);
+                          });
+                      });
+
+                      // 处理取消
+                      modal.querySelector('#cancel-export').addEventListener('click', () => {
+                          document.body.removeChild(modal);
+                          resolve(null);
+                      });
+                    });
+                }
+
+              // 导出为PDF
+              async exportToPDF() {
+                  try {
+                      // 确保html2canvas和jsPDF库都已加载
+                      if (typeof html2canvas === "undefined" || typeof jspdf === "undefined") {
+                          alert("正在加载必要的库，请稍后再试...");
+                          
+                          // 先加载html2canvas
+                          if (typeof html2canvas === "undefined") {
+                              await new Promise((resolve) => {
                                   const script = document.createElement("script");
                                   script.src = "https://html2canvas.hertzen.com/dist/html2canvas.min.js";
                                   script.onload = resolve;
                                   document.head.appendChild(script);
-                              }),
-                              new Promise((resolve) => {
-                                  if (typeof PptxGenJS !== "undefined") {
-                                      resolve();
-                                      return;
-                                  }
+                              });
+                          }
+                          
+                          // 再加载jsPDF
+                          if (typeof jspdf === "undefined") {
+                              await new Promise((resolve) => {
                                   const script = document.createElement("script");
-                                  script.src = "https://unpkg.com/pptxgenjs@3.12.0/dist/pptxgenjs.min.js";
+                                  script.src = "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
                                   script.onload = resolve;
                                   document.head.appendChild(script);
-                              }),
-                          ]);
-
-                          setTimeout(() => {
-                              if (typeof html2canvas !== "undefined" && typeof PptxGenJS !== "undefined") {
-                                  this.saveAsPPT();
-                              } else {
-                                  alert("必要的库加载失败，请刷新页面重试。");
-                              }
-                          }, 100);
+                              });
+                          }
+                          
+                          // 等待一小段时间确保库完全初始化
+                          await new Promise(resolve => setTimeout(resolve, 300));
+                      }
+                      
+                      // 使用不同的方式获取jsPDF实例
+                      let pdf;
+                      if (window.jspdf && window.jspdf.jsPDF) {
+                          // UMD模块方式
+                          pdf = new window.jspdf.jsPDF('l', 'mm', 'a4'); // 横向A4
+                      } else if (window.jsPDF) {
+                          // 全局变量方式
+                          pdf = new window.jsPDF('l', 'mm', 'a4'); // 横向A4
+                      } else {
+                          alert("jsPDF库加载失败，请刷新页面重试。");
+                          console.error("无法找到jsPDF实例");
                           return;
                       }
-
-                      const pptx = new PptxGenJS();
+                      
                       const currentSlideIndex = this.currentSlideIndex;
 
                       for (let i = 0; i < this.slides.length; i++) {
                           this.goToSlide(i);
                           await new Promise((resolve) => setTimeout(resolve, 300));
 
-                          const slideElement = document.querySelector(`.slide:nth-child(${i + 1})`);
+                          const slideElement = document.querySelector('.slide.active');
+                          if (!slideElement) continue;
 
                           const canvas = await html2canvas(slideElement, {
                               scale: 2,
@@ -2803,29 +2897,268 @@
                           });
 
                           const imgData = canvas.toDataURL("image/png");
-                          const pptSlide = pptx.addSlide();
 
-                          pptSlide.addText(this.slides[i].title, {
-                              x: 1,
-                              y: 1,
-                              w: "80%",
-                              h: 1,
-                              fontSize: 28,
-                              bold: true,
-                              color: "000000",
-                          });
+                          // 计算图片在PDF中的位置和大小（A4横向尺寸为297mm x 210mm）
+                          const pageWidth = pdf.internal.pageSize.getWidth();
+                          const pageHeight = pdf.internal.pageSize.getHeight();
+                          const imgWidth = pageWidth - 20; // 左右各留10mm边距
+                          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                          const imgX = 10;
+                          const imgY = (pageHeight - imgHeight) / 2;
 
-                          pptSlide.addImage({
-                              data: imgData,
-                              x: 0.5,
-                              y: 1.5,
-                              w: 9,
-                              h: 6,
-                          });
+                          if (i > 0) {
+                              pdf.addPage();
+                          }
+
+                          pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth, imgHeight);
                       }
 
                       this.goToSlide(currentSlideIndex);
-                      pptx.writeFile({ fileName: "AI_PPT_演示文稿.pptx" });
+                      pdf.save(`AI_PPT_演示文稿_${new Date().toLocaleDateString().replace(/\//g, '-')}.pdf`);
+                      showNotification('PDF导出成功！', 'success');
+                  } catch (error) {
+                      console.error("导出PDF失败:", error);
+                      alert("导出PDF失败，请重试或检查控制台错误信息。");
+                  }
+              }
+
+              // 保存为PPT
+              async saveAsPPT() {
+                  try {
+                      console.log("开始PPT导出流程");
+                      
+                      // 获取当前时间戳用于调试
+                      const startTime = Date.now();
+                      
+                      // 确保所有幻灯片已经渲染
+                      await new Promise(resolve => setTimeout(resolve, 200));
+                      
+                      // 检查必要的库是否已加载
+                      if (typeof html2canvas === "undefined" || typeof PptxGenJS === "undefined") {
+                          console.log("检测到必要的库未加载，开始加载");
+                          
+                          // 显示加载中提示
+                          const loadingAlert = document.createElement('div');
+                          loadingAlert.id = "ppt-loading-alert";
+                          loadingAlert.style.cssText = `
+                              position: fixed;
+                              top: 50%;
+                              left: 50%;
+                              transform: translate(-50%, -50%);
+                              background: white;
+                              padding: 20px 40px;
+                              border-radius: 8px;
+                              box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+                              z-index: 10000;
+                              font-size: 16px;
+                              text-align: center;
+                          `;
+                          loadingAlert.textContent = "正在加载必要的库，请稍候...";
+                          document.body.appendChild(loadingAlert);
+
+                          try {
+                              // 顺序加载库，先加载html2canvas，再加载PptxGenJS
+                              // 先尝试加载html2canvas
+                              if (typeof html2canvas === "undefined") {
+                                  console.log("开始加载html2canvas库");
+                                  await new Promise((resolve, reject) => {
+                                      const script = document.createElement("script");
+                                      script.src = "https://html2canvas.hertzen.com/dist/html2canvas.min.js";
+                                      script.onload = () => {
+                                          console.log("html2canvas库加载完成，耗时:", Date.now() - startTime, "ms");
+                                          resolve();
+                                      };
+                                      script.onerror = (err) => {
+                                          console.error("html2canvas库加载失败:", err);
+                                          reject(new Error("html2canvas库加载失败"));
+                                      };
+                                      document.head.appendChild(script);
+                                  });
+                              }
+                              
+                              // 再尝试加载PptxGenJS
+                              if (typeof PptxGenJS === "undefined") {
+                                  console.log("开始加载PptxGenJS库");
+                                  // 尝试使用更可靠的CDN源
+                                  try {
+                                      await new Promise((resolve, reject) => {
+                                          const script = document.createElement("script");
+                                          // 使用jsdelivr CDN替代unpkg
+                                          script.src = "https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgenjs.min.js";
+                                          script.onload = () => {
+                                              console.log("PptxGenJS库加载完成(jsdelivr)，耗时:", Date.now() - startTime, "ms");
+                                              resolve();
+                                          };
+                                          script.onerror = (err) => {
+                                              console.error("PptxGenJS库加载失败(jsdelivr):", err);
+                                              reject(new Error("PptxGenJS库加载失败(jsdelivr)"));
+                                          };
+                                          document.head.appendChild(script);
+                                      });
+                                  } catch (e) {
+                                      console.warn("主CDN加载失败，尝试备用CDN");
+                                      // 尝试备用CDN源
+                                      await new Promise((resolve, reject) => {
+                                          const script = document.createElement("script");
+                                          script.src = "https://cdn.jsdelivr.net/npm/pptxgenjs";
+                                          script.onload = () => {
+                                              console.log("PptxGenJS库加载完成(备用CDN)，耗时:", Date.now() - startTime, "ms");
+                                              resolve();
+                                          };
+                                          script.onerror = (err) => {
+                                              console.error("PptxGenJS库加载失败(所有CDN):", err);
+                                              reject(new Error("PPT导出所需的核心库加载失败，请检查网络连接"));
+                                          };
+                                          document.head.appendChild(script);
+                                      });
+                                  }
+                              }
+
+                              // 给库足够的初始化时间，增加到1000ms
+                              console.log("等待库初始化完成");
+                              await new Promise(resolve => setTimeout(resolve, 1000));
+                                
+                              // 检查库是否成功加载
+                              console.log("检查库加载状态: html2canvas=", typeof html2canvas, "PptxGenJS=", typeof PptxGenJS);
+                              if (typeof html2canvas === "undefined" || typeof PptxGenJS === "undefined") {
+                                  // 作为备选方案，尝试直接使用window上的变量
+                                  if (window.PptxGenJS) {
+                                      console.log("找到window.PptxGenJS，尝试使用");
+                                      PptxGenJS = window.PptxGenJS;
+                                  } else if (window.pptxgenjs) {
+                                      console.log("找到window.pptxgenjs，尝试使用");
+                                      PptxGenJS = window.pptxgenjs;
+                                  }
+                                  
+                                  if (window.html2canvas) {
+                                      console.log("找到window.html2canvas，尝试使用");
+                                      html2canvas = window.html2canvas;
+                                  }
+                                  
+                                  // 再次检查
+                                  if (typeof html2canvas === "undefined" || typeof PptxGenJS === "undefined") {
+                                      console.error("库加载失败，无法继续导出");
+                                      alert("必要的库加载失败，请刷新页面重试或检查网络连接。");
+                                      return;
+                                  }
+                              }
+                          } finally {
+                              // 无论成功还是失败，都移除加载提示
+                              if (loadingAlert.parentNode === document.body) {
+                                  console.log("移除加载提示框");
+                                  document.body.removeChild(loadingAlert);
+                              }
+                          }
+                      }
+
+                      console.log("库加载完成，开始创建PPT");
+                      
+                      // 尝试不同方式创建PptxGenJS实例
+                      let pptx;
+                      try {
+                          pptx = new PptxGenJS();
+                          console.log("成功创建PptxGenJS实例");
+                      } catch (e) {
+                          console.error("创建PptxGenJS实例失败:", e);
+                          // 尝试其他可能的实例化方式
+                          try {
+                              console.log("尝试使用window.PptxGenJS创建实例");
+                              pptx = new window.PptxGenJS();
+                              console.log("成功使用window.PptxGenJS创建实例");
+                          } catch (e2) {
+                              console.error("所有尝试创建PptxGenJS实例的方式都失败了");
+                              alert("PPT生成库初始化失败，请刷新页面重试。");
+                              return;
+                          }
+                      }
+                      
+                      const currentSlideIndex = this.currentSlideIndex;
+
+                      // 确保至少有一个幻灯片可导出
+                      if (this.slides.length === 0) {
+                          console.log("没有可导出的幻灯片");
+                          alert("没有可导出的幻灯片，请先添加幻灯片。");
+                          return;
+                      }
+
+                      console.log("开始处理幻灯片，共", this.slides.length, "张");
+                      for (let i = 0; i < this.slides.length; i++) {
+                          console.log("处理第", i + 1, "张幻灯片");
+                          this.goToSlide(i);
+                          await new Promise((resolve) => setTimeout(resolve, 300));
+
+                          const slideElement = document.querySelector(`.slide:nth-child(${i + 1})`);
+                          if (!slideElement) {
+                              console.warn("未找到第", i + 1, "张幻灯片元素，跳过");
+                              continue;
+                          }
+
+                          try {
+                              const canvas = await html2canvas(slideElement, {
+                                  scale: 2,
+                                  logging: false,
+                                  useCORS: true,
+                              });
+                              console.log("成功捕获幻灯片", i + 1, "的截图");
+
+                              const imgData = canvas.toDataURL("image/png");
+                              const pptSlide = pptx.addSlide();
+                              console.log("成功添加PPT页面");
+
+                              // 添加标题（如果有）
+                              if (this.slides[i].title) {
+                                  pptSlide.addText(this.slides[i].title, {
+                                      x: 1,
+                                      y: 1,
+                                      w: "80%",
+                                      h: 1,
+                                      fontSize: 28,
+                                      bold: true,
+                                      color: "000000",
+                                  });
+                                  console.log("添加幻灯片标题");
+                              }
+
+                              // 添加幻灯片图片
+                              pptSlide.addImage({
+                                  data: imgData,
+                                  x: 0.5,
+                                  y: 1.5,
+                                  w: 9,
+                                  h: 6,
+                              });
+                              console.log("添加幻灯片图片");
+                          } catch (e) {
+                              console.error("处理幻灯片", i + 1, "时出错:", e);
+                              // 继续处理下一张幻灯片，不中断整个流程
+                          }
+                      }
+
+                      this.goToSlide(currentSlideIndex);
+                      console.log("准备保存PPT文件");
+                      
+                      // 使用try-catch确保导出操作的稳定性
+                      try {
+                          // 尝试使用不同的保存方法
+                          const fileName = `AI_PPT_演示文稿_${new Date().toLocaleDateString().replace(/\//g, '-')}.pptx`;
+                          console.log("开始导出文件:", fileName);
+                          
+                          // 检查是否支持writeFile方法
+                          if (typeof pptx.writeFile === 'function') {
+                              pptx.writeFile({ fileName: fileName });
+                          } else if (typeof pptx.save === 'function') {
+                              // 备选方法
+                              pptx.save(fileName);
+                          } else {
+                              throw new Error("未找到保存文件的方法");
+                          }
+                          
+                          console.log("PPT导出成功，总耗时:", Date.now() - startTime, "ms");
+                          showNotification('PPT导出成功！', 'success');
+                      } catch (e) {
+                          console.error("保存PPT文件失败:", e);
+                          alert("PPT文件保存失败，请检查浏览器权限设置或尝试使用其他浏览器。");
+                      }
                   } catch (error) {
                       console.error("导出PPT失败:", error);
                       alert("导出PPT失败，请重试或检查控制台错误信息。");
@@ -2836,7 +3169,7 @@
                   const navButtons = {
                       "prev-slide": this.prevSlide.bind(this),
                       "next-slide": this.nextSlide.bind(this),
-                      "save-ppt": this.saveAsPPT.bind(this),
+                      "save-ppt": this.savePresentation.bind(this),
                       "fullscreen": this.toggleFullscreen.bind(this),
                       "add-slide": this.addSlide.bind(this),
                       "delete-slide": () => this.removeSlide(this.currentSlideIndex),
@@ -2850,6 +3183,7 @@
                               this.toggleEditMode();
                           }
                       },
+                      "export-json": this.exportToJSON.bind(this)
                   };
 
                   Object.entries(navButtons).forEach(([id, handler]) => {
@@ -3067,7 +3401,53 @@
                   activeSlide.style.marginLeft = '';
                   activeSlide.style.marginTop = '';
               }
-              
+
+              // 导出JSON功能
+              exportToJSON() {
+                  try {
+                      // 收集演示文稿数据
+                      const presentationData = {
+                          slides: this.slides.map((slide) => {
+                              return {
+                                  title: slide.title,
+                                  backgroundColor: slide.backgroundColor,
+                                  backgroundImage: slide.backgroundImage,
+                                  elements: slide.elements.map((element) => element.getState()),
+                              };
+                          }),
+                          currentSlideIndex: this.currentSlideIndex,
+                          version: '1.0',
+                          exportDate: new Date().toISOString()
+                      };
+
+                      // 转换为格式化的JSON字符串
+                      const jsonString = JSON.stringify(presentationData, null, 2);
+
+                      // 创建Blob对象
+                      const blob = new Blob([jsonString], { type: 'application/json' });
+
+                      // 创建下载链接
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement('a');
+                      a.href = url;
+                      a.download = `AI_PPT_设计_${new Date().toLocaleDateString().replace(/\//g, '-')}.json`;
+                      document.body.appendChild(a);
+
+                      // 触发下载
+                      a.click();
+
+                      // 清理
+                      setTimeout(() => {
+                          document.body.removeChild(a);
+                          URL.revokeObjectURL(url);
+                      }, 100);
+
+                      showNotification('JSON设计导出成功！', 'success');
+                  } catch (error) {
+                      console.error('JSON导出失败:', error);
+                      showNotification('JSON导出失败，请重试。', 'error');
+                  }
+              }
 
               addJSONImportFeature() {
                 // 创建隐藏的文件输入
