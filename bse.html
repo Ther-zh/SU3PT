@@ -442,31 +442,25 @@
 
       /* 修改全屏模式下的幻灯片样式 */
       body.fullscreen .slide {
-        /* 移除固定尺寸限制 */
-        width: 100% !important;
-        height: 100% !important;
-        max-width: 100vw !important;
-        max-height: 100vh !important;
-        /* 移除居中margin */
-        margin: 0 !important;
         /* 移除边框和阴影以获得更干净的全屏体验 */
         border: none !important;
         box-shadow: none !important;
-        /* 确保幻灯片保持16:9比例并尽可能大 */
-        object-fit: contain;
-        transform: none !important;
+        /* 移除max-width/max-height限制 */
+        max-width: none !important;
+        max-height: none !important;
       }
 
       /* 修改演示区域在全屏时的样式 */
       body.fullscreen #presentation-area {
-        background-color: #000 !important;
-        margin: 0;
-        padding: 0;
-        /* 使用flex布局确保幻灯片居中 */
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
+    background-color: #000 !important;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+}
 
       /* 元素添加面板 */
       .element-panel {
@@ -1427,10 +1421,23 @@
               }
 
               handleResize() {
-                  if (this.chartInstance) {
-                      this.chartInstance.resize();
-                  }
-              }
+    if (document.fullscreenElement) {
+        this.adjustSlideForFullscreen();
+    } else {
+        // 确保非全屏状态下幻灯片正确居中
+        const slide = document.querySelector('.slide.active');
+        if (slide) {
+            slide.style.position = 'absolute';
+            slide.style.left = '50%';
+            slide.style.top = '50%';
+            slide.style.marginLeft = `-512px`;
+            slide.style.marginTop = `-288px`;
+            slide.style.width = '1024px';
+            slide.style.height = '576px';
+            slide.style.transform = 'none';
+        }
+    }
+}
 
               onDelete() {
                   if (this.chartInstance) {
@@ -2488,44 +2495,57 @@
                   }
               }
 
-              renderSlides() {
-                  const presentationArea = document.getElementById("presentation-area");
+ renderSlides() {
+    const presentationArea = document.getElementById("presentation-area");
 
-                  if (!presentationArea) {
-                      console.error("演示区域元素未找到");
-                      return;
-                  }
+    if (!presentationArea) {
+        console.error("演示区域元素未找到");
+        return;
+    }
 
-                  presentationArea.innerHTML = "";
+    presentationArea.innerHTML = "";
 
-                  const currentSlide = this.slides[this.currentSlideIndex];
-                  if (currentSlide) {
-                      const slideElement = document.createElement("div");
-                      slideElement.innerHTML = currentSlide.render();
-                      const slideDOM = slideElement.firstElementChild;
+    const currentSlide = this.slides[this.currentSlideIndex];
+    if (currentSlide) {
+        const slideElement = document.createElement("div");
+        slideElement.innerHTML = currentSlide.render();
+        const slideDOM = slideElement.firstElementChild;
 
-                      slideDOM.classList.add("active");
+        slideDOM.classList.add("active");
+        
+        // 设置幻灯片初始位置和尺寸
+        slideDOM.style.position = 'absolute';
+        slideDOM.style.left = '50%';
+        slideDOM.style.top = '50%';
+        slideDOM.style.marginLeft = `-512px`; // 1024/2
+        slideDOM.style.marginTop = `-288px`; // 576/2
+        slideDOM.style.width = '1024px';
+        slideDOM.style.height = '576px';
 
-                      presentationArea.appendChild(slideDOM);
+        presentationArea.appendChild(slideDOM);
 
-                      currentSlide.elements.forEach((element) => {
-                          try {
-                              this.editManager.registerElement(element);
-                          } catch (error) {
-                              console.error(`注册元素${element.id}时出错:`, error);
-                          }
-                      });
+        currentSlide.elements.forEach((element) => {
+            try {
+                this.editManager.registerElement(element);
+            } catch (error) {
+                console.error(`注册元素${element.id}时出错:`, error);
+            }
+        });
 
-                      setTimeout(() => {
-                          try {
-                              currentSlide.renderElements();
-                          } catch (error) {
-                              console.error("渲染图表元素时出错:", error);
-                          }
-                      }, 100);
-                  }
-              }
-
+        setTimeout(() => {
+            try {
+                currentSlide.renderElements();
+                
+                // 如果是全屏模式，调整尺寸
+                if (document.fullscreenElement) {
+                    this.zoomToFitFullscreen();
+                }
+            } catch (error) {
+                console.error("渲染图表元素时出错:", error);
+            }
+        }, 100);
+    }
+}
               renderSlideList() {
                   const slideList = document.getElementById("slide-list");
                   if (!slideList) return;
@@ -2951,8 +2971,16 @@
                           });
                       });
                   }
+                   
+                  // 添加全屏模式下的窗口大小变化事件
+                  window.addEventListener('resize', () => {
+                      if (document.fullscreenElement && document.body.classList.contains('fullscreen')) {
+                          this.zoomToFitFullscreen();
+                      }
+                  });
               }
 
+              // 全屏切换方法
               toggleFullscreen() {
                   const presentationArea = document.getElementById("presentation-area");
                   if (!presentationArea) return;
@@ -2972,6 +3000,7 @@
 
                       setTimeout(() => {
                           this.renderSlides();
+                          this.zoomToFitFullscreen();
                       }, 100);
                   } else {
                       if (document.exitFullscreen) {
@@ -2987,10 +3016,58 @@
                       if (navButtons) navButtons.style.display = "flex";
 
                       setTimeout(() => {
+                          this.resetSlideStyles();
                           this.renderSlides();
                       }, 100);
                   }
               }
+
+              // 缩放适配全屏的方法
+              zoomToFitFullscreen() {
+                  const activeSlide = document.querySelector('.slide.active');
+                  if (!activeSlide) return;
+                  
+                  // 计算屏幕与幻灯片的宽高比
+                  const screenRatio = window.innerWidth / window.innerHeight;
+                  const slideRatio = 16 / 9; // 标准PPT比例
+                  
+                  // 计算缩放比例
+                  let scale = 1;
+                  if (screenRatio > slideRatio) {
+                      // 屏幕更宽，按高度缩放
+                      scale = window.innerHeight / 576; // 576是原始高度
+                  } else {
+                      // 屏幕更高，按宽度缩放
+                      scale = window.innerWidth / 1024; // 1024是原始宽度
+                  }
+                  
+                  // 应用缩放和居中
+                  activeSlide.style.transform = `scale(${scale})`;
+                  activeSlide.style.transformOrigin = 'center center';
+                  activeSlide.style.width = '1024px';
+                  activeSlide.style.height = '576px';
+                  activeSlide.style.left = '50%';
+                  activeSlide.style.top = '50%';
+                  activeSlide.style.marginLeft = '-512px';
+                  activeSlide.style.marginTop = '-288px';
+              }
+               
+              // 重置幻灯片样式（退出全屏时使用）
+              resetSlideStyles() {
+                  const activeSlide = document.querySelector('.slide.active');
+                  if (!activeSlide) return;
+                  
+                  // 移除通过JavaScript设置的内联样式
+                  activeSlide.style.transform = '';
+                  activeSlide.style.transformOrigin = '';
+                  activeSlide.style.width = '';
+                  activeSlide.style.height = '';
+                  activeSlide.style.left = '';
+                  activeSlide.style.top = '';
+                  activeSlide.style.marginLeft = '';
+                  activeSlide.style.marginTop = '';
+              }
+              
 
               addJSONImportFeature() {
                 // 创建隐藏的文件输入
