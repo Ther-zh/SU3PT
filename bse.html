@@ -3417,7 +3417,67 @@
                           }),
                           currentSlideIndex: this.currentSlideIndex,
                           version: '1.0',
-                          exportDate: new Date().toISOString()
+                          exportDate: new Date().toISOString(),
+                          // 包含注册的自定义元素
+                          customElements: this.importedCustomElements && this.importedCustomElements.length > 0 ? this.importedCustomElements : Array.from(ElementRegistry.customElements.entries()).map(([typeName, elementClass]) => {
+                              // 获取元素原型
+                              const prototype = elementClass.prototype;
+                              
+                              // 为不同类型的自定义元素提供更合适的模板
+                              let template = undefined;
+                              
+                              // 判断元素类型并提供相应的模板
+                              if (typeName === 'gradient-panel') {
+                                  template = `<div style="background: linear-gradient(145deg, {{color1}}, {{color2}}); border-radius: 12px; padding: 20px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);">
+                                      <div class="gradient-title" style="color: {{textColor}}; font-size: 20px; font-weight: bold; margin-bottom: 15px;">{{title}}</div>
+                                      <div class="gradient-content" style="color: {{textColor}};">{{content}}</div>
+                                  </div>`;
+                              } else if (typeName === 'progress-ring') {
+                                  template = `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%;">
+                                      <svg width="{{size}}" height="{{size}}" viewBox="0 0 100 100">
+                                          <circle cx="50" cy="50" r="45" stroke="{{trackColor}}" stroke-width="8" fill="none" stroke-linecap="round"/>
+                                          <circle cx="50" cy="50" r="45" stroke="{{color}}" stroke-width="8" fill="none" stroke-linecap="round" stroke-dasharray="283" stroke-dashoffset="{{dashOffset}}" transform="rotate(-90 50 50)"/>
+                                      </svg>
+                                      <div style="margin-top: 10px; font-size: {{textSize}}px; font-weight: bold;">{{value}}%</div>
+                                      <div style="font-size: 14px; color: #666;">{{label}}</div>
+                                  </div>`;
+                              } else if (typeName === 'tech-stack') {
+                                  template = `<div style="padding: 20px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #007bff;">
+                                      <h3 style="margin-top: 0; color: #333;">{{title}}</h3>
+                                      <div class="tech-items" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px;">{{items}}</div>
+                                  </div>`;
+                              } else {
+                                  // 对于其他类型的元素，尝试提取模板或提供通用模板
+                                  template = prototype.renderContent ? this.extractTemplateFromRender(prototype.renderContent.toString()) : 
+                                      `<div style="padding: 20px; border: 2px dashed #ccc; border-radius: 8px;">
+                                          <h3>自定义元素: ${typeName}</h3>
+                                          <p>这是一个自定义元素，请确保导入后有相应的渲染逻辑。</p>
+                                      </div>`;
+                              }
+                              
+                                  // 提取变量信息
+                                  const variables = [];
+                                  if (template) {
+                                      // 查找所有的 {{variable}} 格式的变量
+                                      const variableRegex = /{{\s*(\w+)\s*}}/g;
+                                      let match;
+                                      while ((match = variableRegex.exec(template)) !== null) {
+                                          if (!variables.includes(match[1])) {
+                                              variables.push(match[1]);
+                                          }
+                                      }
+                                  }
+                                  
+                                  return {
+                                      type: typeName,
+                                      template: template,
+                                      version: '1.0',
+                                      description: `自定义元素: ${typeName}`,
+                                      variables: variables,
+                                      // 添加渲染类型标识
+                                      renderType: 'template'
+                                  };
+                              })
                       };
 
                       // 转换为格式化的JSON字符串
@@ -3503,7 +3563,12 @@
 
                       // 1. 注册自定义元素
                       if (jsonData.customElements && Array.isArray(jsonData.customElements)) {
+                          // 存储导入的自定义元素信息，以便导出时使用
+                          this.importedCustomElements = jsonData.customElements;
                           this.registerCustomElements(jsonData.customElements);
+                      } else {
+                          // 如果没有自定义元素，清空存储
+                          this.importedCustomElements = [];
                       }
 
                       // 2. 注入自定义样式
@@ -3545,6 +3610,65 @@
                       console.error('JSON导入失败:', error);
                       showNotification('导入失败: ' + error.message, 'error');
                       return false;
+                  }
+              }
+
+              // 从renderContent函数中提取模板字符串
+              extractTemplateFromRender(renderFunctionStr) {
+                  try {
+                      console.log('正在提取模板:', renderFunctionStr);
+                       
+                      // 尝试提取完整的模板定义块
+                      // 匹配任何以template = 开头，以分号结尾的语句
+                      const fullTemplateMatch = renderFunctionStr.match(/let\s+template\s*=\s*([\s\S]*?);/);
+                      if (fullTemplateMatch && fullTemplateMatch[1]) {
+                          // 处理可能包含 || 操作符的模板定义
+                          const templateValue = fullTemplateMatch[1].trim();
+                          console.log('找到完整模板定义:', templateValue);
+                           
+                          // 检查是否包含 || 操作符（如 elementDef.template || `...`）
+                          const fallbackMatch = templateValue.match(/\|\|\s*(`[^`]*`|'[^']*'|"[^"]*")/);
+                          if (fallbackMatch && fallbackMatch[1]) {
+                              // 提取回退模板
+                              const fallbackTemplate = fallbackMatch[1].slice(1, -1); // 移除引号
+                              console.log('提取到回退模板:', fallbackTemplate);
+                              return fallbackTemplate;
+                          }
+                          
+                          // 提取直接赋值的模板字符串
+                          const templateStrMatch = templateValue.match(/^(`[^`]*`|'[^']*'|"[^"]*")$/);
+                          if (templateStrMatch && templateStrMatch[1]) {
+                              const templateStr = templateStrMatch[1].slice(1, -1); // 移除引号
+                              console.log('提取到直接模板字符串:', templateStr);
+                              return templateStr;
+                          }
+                      }
+                       
+                      // 尝试提取innerHTML设置
+                      const innerHTMLMatch = renderFunctionStr.match(/this\.element\.innerHTML\s*=\s*(template|(`[^`]*`|'[^']*'|"[^"]*"));/);
+                      if (innerHTMLMatch && innerHTMLMatch[1]) {
+                          console.log('找到innerHTML设置:', innerHTMLMatch[1]);
+                          if (innerHTMLMatch[1] === 'template') {
+                              // 如果是使用模板变量，不再递归调用，而是返回空字符串或占位符
+                              return '<!-- 模板使用了变量引用，无法直接提取 -->';
+                          } else {
+                              // 如果是直接设置的字符串，则提取它
+                              return innerHTMLMatch[1].slice(1, -1); // 移除引号
+                          }
+                      }
+                       
+                      // 尝试直接提取HTML字符串片段
+                      const htmlContentMatch = renderFunctionStr.match(/`<div[^`]*>`/);
+                      if (htmlContentMatch && htmlContentMatch[0]) {
+                          console.log('提取到HTML内容:', htmlContentMatch[0]);
+                          return htmlContentMatch[0].slice(1, -1); // 移除反引号
+                      }
+                       
+                      console.log('未能提取模板');
+                      return undefined;
+                  } catch (error) {
+                      console.warn('提取模板失败:', error);
+                      return undefined;
                   }
               }
 
