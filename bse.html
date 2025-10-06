@@ -2073,17 +2073,19 @@
                             <input type="text" id="chart-title" value="${defaultData.title}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
                         </div>
 
+                        ${chartType !== 'pie' ? `
                         <div style="margin-bottom: 15px;">
                             <label style="display: block; margin-bottom: 5px; font-weight: bold;">X轴数据 (用逗号分隔):</label>
-                            <input type="text" id="chart-xdata" value="${defaultData.xAxis.data.join(',')}" 
+                            <input type="text" id="chart-xdata" value="${defaultData.xAxis?.data?.join(',') || ''}"
                                 placeholder="例如: 1月,2月,3月,4月" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
                         </div>
 
                         <div style="margin-bottom: 15px;">
                             <label style="display: block; margin-bottom: 5px; font-weight: bold;">Y轴数据 (用逗号分隔):</label>
-                            <input type="text" id="chart-ydata" value="${defaultData.series[0].data.join(',')}" 
+                            <input type="text" id="chart-ydata" value="${defaultData.series[0]?.data?.map(item => item.value || item).join(',') || ''}"
                                 placeholder="例如: 10,20,15,25" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
                         </div>
+                        ` : ''}
 
                         ${chartType === 'pie' ? `
                         <div style="margin-bottom: 15px;">
@@ -2109,8 +2111,6 @@
                 // 处理确认
                 modal.querySelector('#confirm-chart').addEventListener('click', () => {
                     const title = modal.querySelector('#chart-title').value;
-                    const xData = modal.querySelector('#chart-xdata').value.split(',').map(item => item.trim());
-                    const yData = modal.querySelector('#chart-ydata').value.split(',').map(item => parseFloat(item.trim()) || 0);
                     
                     let chartOption;
                     
@@ -2132,6 +2132,8 @@
                             }]
                         };
                     } else {
+                        const xData = modal.querySelector('#chart-xdata').value.split(',').map(item => item.trim());
+                        const yData = modal.querySelector('#chart-ydata').value.split(',').map(item => parseFloat(item.trim()) || 0);
                         chartOption = {
                             title: { text: title || this.getChartTypeName(chartType) },
                             tooltip: {},
