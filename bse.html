@@ -966,20 +966,21 @@
                       let newLeft = initialLeft;
                       let newTop = initialTop;
 
-                      if (isRight) newWidth = Math.max(50, initialWidth + deltaX);
+                      if (isRight) newWidth = Math.max(10, initialWidth + deltaX);
                       if (isLeft) {
-                          newWidth = Math.max(50, initialWidth - deltaX);
+                          newWidth = Math.max(10, initialWidth - deltaX);
                           newLeft = initialLeft + deltaX;
                       }
-                      if (isBottom) newHeight = Math.max(30, initialHeight + deltaY);
+                      if (isBottom) newHeight = Math.max(10, initialHeight + deltaY);
                       if (isTop) {
-                          newHeight = Math.max(30, initialHeight - deltaY);
+                          newHeight = Math.max(10, initialHeight - deltaY);
                           newTop = initialTop + deltaY;
                       }
 
                       const parentRect = element.parentElement.getBoundingClientRect();
-                      newLeft = Math.max(parentPosition.x, Math.min(parentRect.right - newWidth, newLeft));
-                      newTop = Math.max(parentPosition.y, Math.min(parentRect.bottom - newHeight, newTop));
+                      // 只限制元素不超出父容器，但允许调整到任何大小
+                      newLeft = Math.max(parentPosition.x, newLeft);
+                      newTop = Math.max(parentPosition.y, newTop);
 
                       element.style.width = `${newWidth}px`;
                       element.style.height = `${newHeight}px`;
@@ -1274,15 +1275,15 @@
                   
                   // 仅在初始添加图片时调整大小，避免后续编辑时被覆盖
                   if (!this.content.hasBeenEdited) {
-                      // 设置一个合理的最大尺寸，避免图片过大
-                      const maxWidth = 500;
-                      const maxHeight = 400;
+                      // 设置一个合理的初始尺寸，但不限制后续调整
+                      const initialMaxWidth = 800;
+                      const initialMaxHeight = 600;
                       
                       // 计算缩放比例
                       let scale = 1;
-                      if (img.width > maxWidth || img.height > maxHeight) {
-                          const widthScale = maxWidth / img.width;
-                          const heightScale = maxHeight / img.height;
+                      if (img.width > initialMaxWidth || img.height > initialMaxHeight) {
+                          const widthScale = initialMaxWidth / img.width;
+                          const heightScale = initialMaxHeight / img.height;
                           scale = Math.min(widthScale, heightScale);
                       }
                       
@@ -3737,8 +3738,8 @@
                                                   itemHtml = itemHtml.replace(/{{\s*this\s*}}/g, value);
                                               }
 
-                                              // 替换索引变量
-                                              itemHtml = itemHtml.replace(/{{\s*index\s*}}/g, index);
+                                              // 替换索引变量，同时支持{{index}}和{{@index}}两种格式
+                                              itemHtml = itemHtml.replace(/{{\s*@?index\s*}}/g, index);
                                               arrayHtml += itemHtml;
                                           });
                                           result = result.replace(match[0], arrayHtml);

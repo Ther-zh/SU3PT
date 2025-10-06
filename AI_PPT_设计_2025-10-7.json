@@ -1,0 +1,2200 @@
+{
+  "slides": [
+    {
+      "title": "重新定义 AI 演示",
+      "backgroundColor": "#0F172A",
+      "backgroundImage": "",
+      "elements": [
+        {
+          "type": "gradient-mask",
+          "content": {
+            "opacity": 0.8
+          },
+          "style": {},
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "size": {
+            "height": 576,
+            "width": 1024
+          },
+          "rotation": 0,
+          "zIndex": 1,
+          "id": "element_1759767748734304"
+        },
+        {
+          "type": "text",
+          "content": {
+            "body": "安全架构｜网页即用｜无限扩展｜语义理解",
+            "title": "SU3PT 智能演示工具"
+          },
+          "style": {
+            "color": "#E2E8F0",
+            "fontSize": "36px",
+            "textAlign": "center"
+          },
+          "position": {
+            "x": 312,
+            "y": 80
+          },
+          "size": {
+            "height": 120,
+            "width": 400
+          },
+          "rotation": 0,
+          "zIndex": 2,
+          "id": "element_1759767748734278"
+        },
+        {
+          "type": "list",
+          "content": {
+            "items": [
+              "产品定位：基于网页的智能演示工具",
+              "核心价值：突破传统模板限制"
+            ]
+          },
+          "style": {
+            "color": "#94A3B8",
+            "fontSize": "20px",
+            "lineHeight": 1.6
+          },
+          "position": {
+            "x": 43,
+            "y": 216
+          },
+          "size": {
+            "height": 150,
+            "width": 360
+          },
+          "rotation": 0,
+          "zIndex": 2,
+          "id": "element_1759767748734755"
+        },
+        {
+          "type": "image",
+          "content": {
+            "url": "https://lf-bot-studio-plugin-resource.coze.cn/obj/bot-studio-platform-plugin-tos/artist/image/27ee3ca436a7415a947cf63a732b6e39.png",
+            "originalSize": {
+              "width": 512,
+              "height": 512
+            },
+            "hasBeenEdited": true
+          },
+          "style": {},
+          "position": {
+            "x": 600,
+            "y": 180
+          },
+          "size": {
+            "width": 512,
+            "height": 512
+          },
+          "rotation": 0,
+          "zIndex": 1,
+          "id": "element_1759767748734223"
+        },
+        {
+          "type": "text",
+          "content": {
+            "body": "聚焦数据安全防护、多格式兼容、企业级 API 集成三大核心模块",
+            "title": "新一代解决方案"
+          },
+          "style": {
+            "color": "#CBD5E1",
+            "fontSize": "24px",
+            "textAlign": "center"
+          },
+          "position": {
+            "x": 160,
+            "y": 380
+          },
+          "size": {
+            "height": 100,
+            "width": 700
+          },
+          "rotation": 0,
+          "zIndex": 2,
+          "id": "element_1759767748734907"
+        }
+      ]
+    },
+    {
+      "title": "AI PPT 工具核心痛点解析",
+      "backgroundColor": "#f5f7fb",
+      "backgroundImage": "",
+      "elements": [
+        {
+          "type": "text",
+          "content": {
+            "title": "AI PPT 工具核心痛点解析"
+          },
+          "style": {
+            "color": "#2d3748",
+            "fontSize": "36px",
+            "textAlign": "left"
+          },
+          "position": {
+            "x": 40,
+            "y": 30
+          },
+          "size": {
+            "height": 60,
+            "width": 944
+          },
+          "rotation": 0,
+          "zIndex": 1,
+          "id": "element_1759767748734871"
+        },
+        {
+          "type": "gradient-highlight",
+          "content": {
+            "color1": "#e3f2fd",
+            "color2": "#bbdefb",
+            "iconBg": "#1976d2",
+            "iconUrl": "https://example.com/warning-icon.png",
+            "text": "传统工具采用固定模板导致样式重复",
+            "textColor": "#2d3748"
+          },
+          "style": {},
+          "position": {
+            "x": 40,
+            "y": 120
+          },
+          "size": {
+            "height": 80,
+            "width": 300
+          },
+          "rotation": 0,
+          "zIndex": 2,
+          "id": "element_175976774873453"
+        },
+        {
+          "type": "chart",
+          "content": {
+            "chartOption": {
+              "series": [
+                {
+                  "data": [
+                    30,
+                    20,
+                    65
+                  ],
+                  "itemStyle": {
+                    "color": "#4f87f9"
+                  },
+                  "type": "bar"
+                }
+              ],
+              "title": {
+                "text": "功能对比分析"
+              },
+              "xAxis": {
+                "data": [
+                  "排版自由",
+                  "数据支持",
+                  "安全性"
+                ]
+              },
+              "yAxis": {
+                "max": 100
+              }
+            }
+          },
+          "style": {},
+          "position": {
+            "x": -21,
+            "y": 239
+          },
+          "size": {
+            "height": 280,
+            "width": 500
+          },
+          "rotation": 0,
+          "zIndex": 2,
+          "id": "element_1759767748734597"
+        },
+        {
+          "type": "security-shield",
+          "content": {
+            "bgColor": "#4f87f9",
+            "iconColor": "#ffffff",
+            "size": 60
+          },
+          "style": {},
+          "position": {
+            "x": 50,
+            "y": 135
+          },
+          "size": {
+            "width": 299,
+            "height": 72
+          },
+          "rotation": 0,
+          "zIndex": 3,
+          "id": "element_1759767748734119"
+        },
+        {
+          "type": "image",
+          "content": {
+            "url": "https://example.com/office-image.png"
+          },
+          "style": {
+            "borderRadius": "12px"
+          },
+          "position": {
+            "x": 548,
+            "y": 186
+          },
+          "size": {
+            "height": 279,
+            "width": 297
+          },
+          "rotation": 0,
+          "zIndex": 2,
+          "id": "element_1759767748734141"
+        }
+      ]
+    },
+    {
+      "title": "设计核心：为什么选择「网页 + JSON」？",
+      "backgroundColor": "linear-gradient (150deg, #f8f9fa 0%, #e9ecef 100%)",
+      "backgroundImage": "",
+      "elements": [
+        {
+          "type": "text",
+          "content": {
+            "body": "",
+            "title": "设计核心：为什么选择「网页 + JSON」？"
+          },
+          "style": {
+            "color": "#2b2d42",
+            "fontSize": "36px",
+            "textAlign": "center"
+          },
+          "position": {
+            "x": -14,
+            "y": 10
+          },
+          "size": {
+            "height": 80,
+            "width": 768
+          },
+          "rotation": 0,
+          "zIndex": 2,
+          "id": "element_1759767748734545"
+        },
+        {
+          "type": "gradient-badge",
+          "content": {
+            "color1": "#4361ee",
+            "color2": "#3a0ca3",
+            "text": "技术架构对比"
+          },
+          "style": {},
+          "position": {
+            "x": -32,
+            "y": 75
+          },
+          "size": {
+            "width": 510,
+            "height": 46
+          },
+          "rotation": 0,
+          "zIndex": 3,
+          "id": "element_1759767748734908"
+        },
+        {
+          "type": "image",
+          "content": {
+            "url": "https://lf-bot-studio-plugin-resource.coze.cn/obj/bot-studio-platform-plugin-tos/artist/image/62de85340d984512987bb5229c916bb6.png",
+            "originalSize": {
+              "width": 512,
+              "height": 512
+            },
+            "hasBeenEdited": true
+          },
+          "style": {},
+          "position": {
+            "x": 467,
+            "y": 127
+          },
+          "size": {
+            "width": 512,
+            "height": 512
+          },
+          "rotation": 0,
+          "zIndex": 2,
+          "id": "element_1759767748734907"
+        },
+        {
+          "type": "dynamic-timeline",
+          "content": {
+            "color": "#480ca8",
+            "items": [
+              {
+                "content": "原生支持动态交互效果 \n 集成 ECharts 可视化框架",
+                "title": "网页载体优势"
+              },
+              {
+                "content": "结构化内容定义 \n 安全扩展性设计",
+                "title": "JSON 中间层"
+              }
+            ]
+          },
+          "style": {},
+          "position": {
+            "x": -16,
+            "y": 135
+          },
+          "size": {
+            "height": 172,
+            "width": 421
+          },
+          "rotation": 0,
+          "zIndex": 3,
+          "id": "element_1759767748734254"
+        },
+        {
+          "type": "chart",
+          "content": {
+            "chartOption": {
+              "series": [
+                {
+                  "data": [
+                    85,
+                    90,
+                    95
+                  ],
+                  "itemStyle": {
+                    "color": "#3a0ca3"
+                  },
+                  "type": "bar"
+                }
+              ],
+              "title": {
+                "left": "center",
+                "text": "技术方案对比"
+              },
+              "xAxis": {
+                "data": [
+                  "扩展性",
+                  "安全性",
+                  "交互性"
+                ],
+                "type": "category"
+              },
+              "yAxis": {
+                "type": "value"
+              }
+            }
+          },
+          "style": {},
+          "position": {
+            "x": 113,
+            "y": 279
+          },
+          "size": {
+            "height": 186,
+            "width": 345
+          },
+          "rotation": 0,
+          "zIndex": 2,
+          "id": "element_1759767748734515"
+        }
+      ]
+    },
+    {
+      "title": "从生成到定制的全流程能力",
+      "backgroundColor": "#F8FAFC",
+      "backgroundImage": "",
+      "elements": [
+        {
+          "type": "gradient-label",
+          "content": {
+            "color1": "#6366F1",
+            "color2": "#8B5CF6",
+            "text": "智能内容生产流程"
+          },
+          "style": {},
+          "position": {
+            "x": 40,
+            "y": 35
+          },
+          "size": {
+            "width": 300,
+            "height": 200
+          },
+          "rotation": 0,
+          "zIndex": 2,
+          "id": "element_1759767748734180"
+        },
+        {
+          "type": "text",
+          "content": {
+            "body": "三阶段递进式服务体系"
+          },
+          "style": {
+            "color": "#1F2937",
+            "fontSize": "28px",
+            "lineHeight": "1.4",
+            "textAlign": "left"
+          },
+          "position": {
+            "x": 40,
+            "y": 100
+          },
+          "size": {
+            "height": 80,
+            "width": 300
+          },
+          "rotation": 0,
+          "zIndex": 1,
+          "id": "element_1759767748734106"
+        },
+        {
+          "type": "image",
+          "content": {
+            "url": "https://example.com/flowchart.png"
+          },
+          "style": {
+            "borderRadius": "12px",
+            "boxShadow": "0 4px 6px rgba (0,0,0,0.1)"
+          },
+          "position": {
+            "x": 360,
+            "y": 120
+          },
+          "size": {
+            "height": 240,
+            "width": 300
+          },
+          "rotation": 0,
+          "zIndex": 1,
+          "id": "element_1759767748734461"
+        },
+        {
+          "type": "list",
+          "content": {
+            "items": [
+              {
+                "icon": "⚙️",
+                "text": "API 开放平台"
+              },
+              {
+                "icon": "☁️",
+                "text": "云端渲染技术"
+              },
+              {
+                "icon": "🔍",
+                "text": "版本追溯系统"
+              }
+            ]
+          },
+          "style": {
+            "itemSpacing": "15px"
+          },
+          "position": {
+            "x": 700,
+            "y": 130
+          },
+          "size": {
+            "height": 200,
+            "width": 280
+          },
+          "rotation": 0,
+          "zIndex": 1,
+          "id": "element_1759767748734138"
+        },
+        {
+          "type": "deco-line",
+          "content": {
+            "color": "#E0E7FF"
+          },
+          "style": {},
+          "position": {
+            "x": 40,
+            "y": 460
+          },
+          "size": {
+            "height": 2,
+            "width": 944
+          },
+          "rotation": 0,
+          "zIndex": 1,
+          "id": "element_1759767748734461"
+        }
+      ]
+    },
+    {
+      "title": "JSON 驱动的内容生成工作流",
+      "backgroundColor": "#F6F8FC",
+      "backgroundImage": "",
+      "elements": [
+        {
+          "type": "gradient-mask",
+          "content": {
+            "opacity": "0.15"
+          },
+          "style": {},
+          "position": {
+            "x": -36,
+            "y": -45
+          },
+          "size": {
+            "height": 576,
+            "width": 1024
+          },
+          "rotation": 0,
+          "zIndex": 1,
+          "id": "element_1759767748734478"
+        },
+        {
+          "type": "deco-line",
+          "content": {
+            "color1": "#6366F1",
+            "color2": "#8B5CF6",
+            "width": 964,
+            "x": 30,
+            "y": 100
+          },
+          "style": {},
+          "position": {
+            "x": 100,
+            "y": 100
+          },
+          "size": {
+            "width": 300,
+            "height": 200
+          },
+          "rotation": 0,
+          "zIndex": 2,
+          "id": "element_1759767748734949"
+        },
+        {
+          "type": "text",
+          "content": {
+            "body": "",
+            "title": "JSON 驱动的内容生成工作流"
+          },
+          "style": {
+            "color": "#1F2937",
+            "fontSize": "36px",
+            "textAlign": "left"
+          },
+          "position": {
+            "x": 30,
+            "y": 30
+          },
+          "size": {
+            "height": 70,
+            "width": 600
+          },
+          "rotation": 0,
+          "zIndex": 3,
+          "id": "element_1759767748734400"
+        },
+        {
+          "type": "highlight-label",
+          "content": {
+            "bgColor": "#E0E7FF",
+            "text": "架构核心",
+            "textColor": "#4338CA",
+            "x": 30,
+            "y": 110
+          },
+          "style": {},
+          "position": {
+            "x": -5,
+            "y": -2
+          },
+          "size": {
+            "width": 300,
+            "height": 200
+          },
+          "rotation": 0,
+          "zIndex": 3,
+          "id": "element_1759767748734856"
+        },
+        {
+          "type": "text",
+          "content": {
+            "body": "内容分析 → 排版规划 → 美化设计",
+            "title": "三模型协作架构"
+          },
+          "style": {
+            "color": "#374151",
+            "fontSize": "20px",
+            "textAlign": "left"
+          },
+          "position": {
+            "x": 21,
+            "y": 202
+          },
+          "size": {
+            "height": 100,
+            "width": 300
+          },
+          "rotation": 0,
+          "zIndex": 2,
+          "id": "element_1759767748734637"
+        },
+        {
+          "type": "image",
+          "content": {
+            "body": "https://lf-bot-studio-plugin-resource.coze.cn/obj/bot-studio-platform-plugin-tos/artist/image/21a38ca11af04b8d8ec042ec90a58ff5.png",
+            "title": "系统架构图"
+          },
+          "style": {
+            "borderRadius": "12px"
+          },
+          "position": {
+            "x": 644,
+            "y": 32
+          },
+          "size": {
+            "height": 376,
+            "width": 300
+          },
+          "rotation": 0,
+          "zIndex": 2,
+          "id": "element_1759767748734961"
+        },
+        {
+          "type": "deco-line",
+          "content": {
+            "color1": "#8B5CF6",
+            "color2": "#EC4899",
+            "width": 300,
+            "x": 700,
+            "y": 480
+          },
+          "style": {},
+          "position": {
+            "x": 272,
+            "y": 343
+          },
+          "size": {
+            "width": 354,
+            "height": 240
+          },
+          "rotation": 0,
+          "zIndex": 3,
+          "id": "element_1759767748734455"
+        }
+      ]
+    },
+    {
+      "title": "多页演示系统技术实现",
+      "backgroundColor": "#f8fafc",
+      "backgroundImage": "",
+      "elements": [
+        {
+          "type": "gradient-mask",
+          "content": {
+            "opacity": "0.15"
+          },
+          "style": {},
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "size": {
+            "height": 576,
+            "width": 1024
+          },
+          "rotation": 0,
+          "zIndex": 1,
+          "id": "element_1759767748734494"
+        },
+        {
+          "type": "text",
+          "content": {
+            "title": "多页演示系统技术实现"
+          },
+          "style": {
+            "color": "#1e3a8a",
+            "fontSize": "36px",
+            "letterSpacing": "-0.5px",
+            "textAlign": "center"
+          },
+          "position": {
+            "x": 150,
+            "y": 40
+          },
+          "size": {
+            "height": 60,
+            "width": 724
+          },
+          "rotation": 0,
+          "zIndex": 3,
+          "id": "element_1759767748734623"
+        },
+        {
+          "type": "list",
+          "content": {
+            "items": [
+              "批处理引擎（Python）",
+              "元数据数据库（SQLite/MySQL）",
+              "界面适配层（JSON 配置驱动）"
+            ],
+            "title": "核心技术模块"
+          },
+          "style": {
+            "backgroundColor": "rgba (241,245,249,0.8)",
+            "borderRadius": "12px",
+            "padding": "20px"
+          },
+          "position": {
+            "x": 18,
+            "y": 165
+          },
+          "size": {
+            "height": 305,
+            "width": 311
+          },
+          "rotation": 0,
+          "zIndex": 2,
+          "id": "element_175976774873462"
+        },
+        {
+          "type": "image",
+          "content": {
+            "url": "https://lf-bot-studio-plugin-resource.coze.cn/obj/bot-studio-platform-plugin-tos/artist/image/9cbbe5ac029047dfbf0957f70fe612d8.png",
+            "originalSize": {
+              "width": 512,
+              "height": 512
+            },
+            "hasBeenEdited": true
+          },
+          "style": {
+            "borderRadius": "16px",
+            "boxShadow": "0 12px 24px rgba (30,58,138,0.15)"
+          },
+          "position": {
+            "x": 344,
+            "y": 134
+          },
+          "size": {
+            "width": 329,
+            "height": 315
+          },
+          "rotation": 0,
+          "zIndex": 2,
+          "id": "element_1759767748734139"
+        },
+        {
+          "type": "text",
+          "content": {
+            "body": "1. 单页面生成时间＜0.5s\n2. 支持 100 + 页面项目构建 \n3. 全量更新 / 增量更新模式可选",
+            "title": "运维特征"
+          },
+          "style": {
+            "backgroundColor": "rgba (255,255,255,0.9)",
+            "borderRadius": "12px",
+            "lineHeight": "1.6",
+            "padding": "20px"
+          },
+          "position": {
+            "x": 686,
+            "y": 135
+          },
+          "size": {
+            "height": 180,
+            "width": 282
+          },
+          "rotation": 0,
+          "zIndex": 2,
+          "id": "element_175976774873441"
+        },
+        {
+          "type": "text",
+          "content": {
+            "body": "・项目生成速度提升 300%\n・修改响应时间缩短至秒级 \n・组件复用率 80%+",
+            "title": "流程优化优势"
+          },
+          "style": {
+            "backgroundColor": "#eff6ff",
+            "borderRadius": "12px",
+            "color": "#1e40af",
+            "padding": "20px"
+          },
+          "position": {
+            "x": 689,
+            "y": 354
+          },
+          "size": {
+            "height": 163,
+            "width": 274
+          },
+          "rotation": 0,
+          "zIndex": 2,
+          "id": "element_1759767748734276"
+        }
+      ]
+    },
+    {
+      "title": "Coze 平台全流程工作闭环",
+      "backgroundColor": "#f5f7fa",
+      "backgroundImage": "",
+      "elements": [
+        {
+          "type": "gradient-mask",
+          "content": {
+            "opacity": "0.15"
+          },
+          "style": {},
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "size": {
+            "height": 576,
+            "width": 1024
+          },
+          "rotation": 0,
+          "zIndex": 1,
+          "id": "element_1759767748734483"
+        },
+        {
+          "type": "image-container",
+          "content": {
+            "borderColor": "rgba (15,23,42,0.12)",
+            "imageUrl": "https://lf-bot-studio-plugin-resource.coze.cn/obj/bot-studio-platform-plugin-tos/artist/image/2fd476f2d5004c3d88b05624750dc50e.png"
+          },
+          "style": {},
+          "position": {
+            "x": 692,
+            "y": 100
+          },
+          "size": {
+            "height": 320,
+            "width": 280
+          },
+          "rotation": 0,
+          "zIndex": 2,
+          "id": "element_1759767748734186"
+        },
+        {
+          "type": "gradient-card",
+          "content": {
+            "endColor": "#6366f1",
+            "items": [
+              "智能需求解析 →",
+              "自动生成大纲框架 →",
+              "可视化页面编辑 →",
+              "标准 JSON 输出"
+            ],
+            "startColor": "#3b82f6",
+            "textColor": "#ffffff"
+          },
+          "style": {},
+          "position": {
+            "x": 44,
+            "y": 157
+          },
+          "size": {
+            "height": 200,
+            "width": 320
+          },
+          "rotation": 0,
+          "zIndex": 3,
+          "id": "element_1759767748734428"
+        },
+        {
+          "type": "gradient-card",
+          "content": {
+            "endColor": "#059669",
+            "items": [
+              "JSON 双向导入导出",
+              "全屏演示模式",
+              "元素坐标调整",
+              "ECharts 图表嵌入"
+            ],
+            "startColor": "#10b981",
+            "textColor": "#ffffff"
+          },
+          "style": {},
+          "position": {
+            "x": 362,
+            "y": 298
+          },
+          "size": {
+            "height": 186,
+            "width": 324
+          },
+          "rotation": 0,
+          "zIndex": 3,
+          "id": "element_1759767748734970"
+        },
+        {
+          "type": "text",
+          "content": {
+            "body": "需求→演示完整闭环",
+            "title": "Coze 平台全流程"
+          },
+          "style": {
+            "color": "#1e293b",
+            "fontSize": "36px",
+            "textAlign": "left"
+          },
+          "position": {
+            "x": 80,
+            "y": 40
+          },
+          "size": {
+            "height": 80,
+            "width": 600
+          },
+          "rotation": 0,
+          "zIndex": 4,
+          "id": "element_1759767748734535"
+        }
+      ]
+    },
+    {
+      "title": "产品优势：比「AI PPT」更懂「演示本质」",
+      "backgroundColor": "#f8fafc",
+      "backgroundImage": "",
+      "elements": [
+        {
+          "type": "gradient-mask",
+          "content": {
+            "opacity": "0.4"
+          },
+          "style": {},
+          "position": {
+            "x": -58,
+            "y": -54
+          },
+          "size": {
+            "height": 576,
+            "width": 1024
+          },
+          "rotation": 0,
+          "zIndex": 1,
+          "id": "element_1759767748734239"
+        },
+        {
+          "type": "text",
+          "content": {
+            "title": "产品优势：比「AI PPT」更懂「演示本质」"
+          },
+          "style": {
+            "color": "#1e293b",
+            "fontSize": "36px",
+            "textAlign": "left"
+          },
+          "position": {
+            "x": 72,
+            "y": 48
+          },
+          "size": {
+            "height": 60,
+            "width": 800
+          },
+          "rotation": 0,
+          "zIndex": 2,
+          "id": "element_1759767748734633"
+        },
+        {
+          "type": "list",
+          "content": {
+            "items": [
+              "输入层 JSON 格式校验",
+              "处理层沙盒隔离",
+              "输出层 XSS 过滤"
+            ],
+            "title": "技术安全体系"
+          },
+          "style": {
+            "color": "#475569"
+          },
+          "position": {
+            "x": 77,
+            "y": 149
+          },
+          "size": {
+            "height": 170,
+            "width": 378
+          },
+          "rotation": 0,
+          "zIndex": 2,
+          "id": "element_1759767748734582"
+        },
+        {
+          "type": "icon-highlight",
+          "content": {
+            "color": "#3b82f6",
+            "height": 120,
+            "icons": [
+              "<path d='M12 2L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-3zm-1 6h2v6h-2V8zm0 8h2v2h-2v-2z'/>",
+              "<path d='M12 22c4.97-1.18 8-5.66 8-10V5l-8-3-8 3v7c0 4.34 3.03 8.82 8 10zM11 8h2v6h-2V8zm0 8h2v2h-2v-2z'/>"
+            ],
+            "width": 380
+          },
+          "style": {},
+          "position": {
+            "x": 55,
+            "y": 365
+          },
+          "size": {
+            "width": 400,
+            "height": 134
+          },
+          "rotation": 0,
+          "zIndex": 2,
+          "id": "element_175976774873419"
+        },
+        {
+          "type": "chart",
+          "content": {
+            "chartOption": {
+              "series": [
+                {
+                  "data": [
+                    30,
+                    65,
+                    95
+                  ],
+                  "itemStyle": {
+                    "color": "#3b82f6"
+                  },
+                  "type": "bar"
+                }
+              ],
+              "title": {
+                "left": "center",
+                "text": "图表生成效率提升对比"
+              },
+              "xAxis": {
+                "data": [
+                  "基础版",
+                  "专业版",
+                  "企业版"
+                ]
+              },
+              "yAxis": {}
+            }
+          },
+          "style": {},
+          "position": {
+            "x": 532.0000305175781,
+            "y": 149
+          },
+          "size": {
+            "height": 312,
+            "width": 425
+          },
+          "rotation": 0,
+          "zIndex": 2,
+          "id": "element_1759767748734385"
+        },
+        {
+          "type": "deco-line",
+          "content": {
+            "color1": "#3b82f6",
+            "color2": "#6366f1",
+            "rotate": 0,
+            "width": 840
+          },
+          "style": {},
+          "position": {
+            "x": 676,
+            "y": 480
+          },
+          "size": {
+            "width": 380,
+            "height": 233
+          },
+          "rotation": 0,
+          "zIndex": 1,
+          "id": "element_175976774873457"
+        },
+        {
+          "type": "text",
+          "content": {
+            "title": "PPT生成效率",
+            "body": "平均6分钟出初步草稿+30分钟用户自主修改"
+          },
+          "style": {},
+          "position": {
+            "x": 130,
+            "y": 378
+          },
+          "size": {
+            "width": 237,
+            "height": 113
+          },
+          "rotation": 0,
+          "zIndex": 1,
+          "id": "element_1759768007212123"
+        }
+      ]
+    },
+    {
+      "title": "五、加分项：从「功能」到「价值」的延伸",
+      "backgroundColor": "#f8fafc",
+      "backgroundImage": "",
+      "elements": [
+        {
+          "type": "text",
+          "content": {
+            "title": "五、加分项：从「功能」到「价值」的延伸"
+          },
+          "style": {
+            "color": "#1e293b",
+            "fontSize": "36px",
+            "textAlign": "left"
+          },
+          "position": {
+            "x": 50,
+            "y": 30
+          },
+          "size": {
+            "height": 60,
+            "width": 900
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "id": "element_1759767748734677"
+        },
+        {
+          "type": "icon-highlight",
+          "content": {
+            "color": "#3b82f6",
+            "height": 180,
+            "icons": [
+              "<path d='M12 2L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-3zm-1 6h2v6h-2V8zm0 8h2v2h-2v-2z'/>",
+              "<path d='M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm-1 4h2v2h-2V6zm0 4h2v6h-2v-6z'/>",
+              "<path d='M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm1 10h-2V8h2v4zm0 2h-2v2h2v-2z'/>"
+            ],
+            "width": 300
+          },
+          "style": {},
+          "position": {
+            "x": 40,
+            "y": 120
+          },
+          "size": {
+            "height": 180,
+            "width": 300
+          },
+          "rotation": 0,
+          "zIndex": 2,
+          "id": "element_1759767748734566"
+        },
+        {
+          "type": "list",
+          "content": {
+            "items": [
+              "参数性能达标率 98%",
+              "7×24 小时技术支持",
+              "模块化功能组合架构"
+            ]
+          },
+          "style": {
+            "color": "#1e293b",
+            "fontSize": "18px"
+          },
+          "position": {
+            "x": 60,
+            "y": 140
+          },
+          "size": {
+            "height": 160,
+            "width": 280
+          },
+          "rotation": 0,
+          "zIndex": 3,
+          "id": "element_1759767748734884"
+        },
+        {
+          "type": "deco-line",
+          "content": {
+            "color1": "#3b82f6",
+            "color2": "#6366f1",
+            "rotate": 90,
+            "width": 2
+          },
+          "style": {},
+          "position": {
+            "x": 380,
+            "y": 100
+          },
+          "size": {
+            "height": 2,
+            "width": 400
+          },
+          "rotation": 0,
+          "zIndex": 1,
+          "id": "element_1759767748734610"
+        },
+        {
+          "type": "image",
+          "content": {
+            "url": "https://lf-bot-studio-plugin-resource.coze.cn/obj/bot-studio-platform-plugin-tos/artist/image/b21e4827327542538dfed134d067c55b.png",
+            "originalSize": {
+              "width": 512,
+              "height": 512
+            },
+            "hasBeenEdited": true
+          },
+          "style": {},
+          "position": {
+            "x": 380,
+            "y": 150
+          },
+          "size": {
+            "width": 512,
+            "height": 512
+          },
+          "rotation": 0,
+          "zIndex": 3,
+          "id": "element_1759767748734742"
+        },
+        {
+          "type": "gradient-badge",
+          "content": {
+            "color1": "#6366f1",
+            "color2": "#8b5cf6",
+            "height": 60,
+            "icon": "<path d='M12 2L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-3zm-1 6h2v6h-2V8zm0 8h2v2h-2v-2z'/>",
+            "subtitle": "价值增长数据",
+            "title": "客户案例实证",
+            "width": 200
+          },
+          "style": {},
+          "position": {
+            "x": -105,
+            "y": 487
+          },
+          "size": {
+            "width": 1063,
+            "height": 55
+          },
+          "rotation": 0,
+          "zIndex": 4,
+          "id": "element_1759767748734234"
+        }
+      ]
+    },
+    {
+      "title": "Coze 平台节点设计（可视化开发）",
+      "backgroundColor": "linear-gradient (135deg, #f8fafc 0%, #f1f5f9 100%)",
+      "backgroundImage": "",
+      "elements": [
+        {
+          "type": "text",
+          "content": {
+            "body": "",
+            "title": "Coze 平台节点设计（可视化开发）"
+          },
+          "style": {
+            "color": "#1e3a8a",
+            "fontSize": "36px",
+            "fontWeight": "600",
+            "textAlign": "center"
+          },
+          "position": {
+            "x": 267.0000305175781,
+            "y": 35
+          },
+          "size": {
+            "height": 74,
+            "width": 578
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "id": "element_175976774873452"
+        },
+        {
+          "type": "deco-line",
+          "content": {
+            "color1": "#2563eb",
+            "color2": "#7c3aed",
+            "rotate": -5,
+            "width": 900
+          },
+          "style": {},
+          "position": {
+            "x": 60,
+            "y": 120
+          },
+          "size": {
+            "width": 300,
+            "height": 200
+          },
+          "rotation": 0,
+          "zIndex": 1,
+          "id": "element_1759767748734208"
+        },
+        {
+          "type": "icon-highlight",
+          "content": {
+            "color": "#3b82f6",
+            "height": 200,
+            "icons": [
+              "<path d='M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 010-5 2.5 2.5 0 010 5z'/>",
+              "<path d='M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12'/>",
+              "<path d='M12 22V12m0 0l3-3m-3 3l-3-3'/>"
+            ],
+            "width": 280
+          },
+          "style": {},
+          "position": {
+            "x": 80,
+            "y": 160
+          },
+          "size": {
+            "height": 200,
+            "width": 280
+          },
+          "rotation": 0,
+          "zIndex": 20,
+          "id": "element_1759767748734105"
+        },
+        {
+          "type": "icon-highlight",
+          "content": {
+            "color": "#6366f1",
+            "height": 200,
+            "icons": [
+              "<path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92c-.5.51-.86.97-.86 2.83h-2v-.5c0-1.54.77-2.22 1.87-3.36.52-.54 1.03-1.07 1.03-1.64 0-.84-.71-1.52-1.58-1.52S10 8.16 10 9h-2c0-1.79 1.64-3.13 3.48-3.13 2 0 3.52 1.34 3.52 3.13 0 1.34-.95 2.24-1.93 3.12z'/>"
+            ],
+            "width": 280
+          },
+          "style": {},
+          "position": {
+            "x": 372,
+            "y": 160
+          },
+          "size": {
+            "height": 200,
+            "width": 280
+          },
+          "rotation": 0,
+          "zIndex": 20,
+          "id": "element_1759767748734440"
+        },
+        {
+          "type": "icon-highlight",
+          "content": {
+            "color": "#10b981",
+            "height": 200,
+            "icons": [
+              "<path d='M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z'/>",
+              "<path d='M8 15h8v2H8zm0-4h8v2H8z'/>"
+            ],
+            "width": 280
+          },
+          "style": {},
+          "position": {
+            "x": 664,
+            "y": 160
+          },
+          "size": {
+            "height": 200,
+            "width": 280
+          },
+          "rotation": 0,
+          "zIndex": 20,
+          "id": "element_175976774873460"
+        },
+        {
+          "type": "text",
+          "content": {
+            "body": "解析用户需求，提取主题 / 核心内容 / 数据需求",
+            "title": "输入处理节点"
+          },
+          "style": {
+            "color": "#1e293b",
+            "fontSize": "20px",
+            "lineHeight": "1.6"
+          },
+          "position": {
+            "x": 125,
+            "y": 213
+          },
+          "size": {
+            "height": 80,
+            "width": 240
+          },
+          "rotation": 0,
+          "zIndex": 30,
+          "id": "element_1759767748734790"
+        },
+        {
+          "type": "text",
+          "content": {
+            "body": "触发内容分析→排版规划→美化设计三阶段模型",
+            "title": "模型调用节点"
+          },
+          "style": {
+            "color": "#1e293b",
+            "fontSize": "20px",
+            "lineHeight": "1.6"
+          },
+          "position": {
+            "x": 404,
+            "y": 212
+          },
+          "size": {
+            "height": 80,
+            "width": 240
+          },
+          "rotation": 0,
+          "zIndex": 30,
+          "id": "element_1759767748734920"
+        },
+        {
+          "type": "text",
+          "content": {
+            "body": "合并多页 JSON 数据，实现版本控制与存储",
+            "title": "整合输出节点"
+          },
+          "style": {
+            "color": "#1e293b",
+            "fontSize": "20px",
+            "lineHeight": "1.6"
+          },
+          "position": {
+            "x": 706,
+            "y": 214
+          },
+          "size": {
+            "height": 80,
+            "width": 240
+          },
+          "rotation": 0,
+          "zIndex": 30,
+          "id": "element_1759767748734638"
+        },
+        {
+          "type": "deco-line",
+          "content": {
+            "color1": "#10b981",
+            "color2": "#3b82f6",
+            "rotate": 2,
+            "width": 960
+          },
+          "style": {},
+          "position": {
+            "x": 32,
+            "y": 460
+          },
+          "size": {
+            "width": 300,
+            "height": 200
+          },
+          "rotation": 0,
+          "zIndex": 5,
+          "id": "element_1759767748734989"
+        }
+      ]
+    },
+    {
+      "title": "多场景应用解决方案",
+      "backgroundColor": "#f8fafc",
+      "backgroundImage": "",
+      "elements": [
+        {
+          "type": "text",
+          "content": {
+            "title": "多场景应用解决方案"
+          },
+          "style": {
+            "color": "#1e40af",
+            "fontSize": "40px",
+            "textAlign": "left"
+          },
+          "position": {
+            "x": 14,
+            "y": -14
+          },
+          "size": {
+            "height": 70,
+            "width": 964
+          },
+          "rotation": 0,
+          "zIndex": 2,
+          "id": "element_1759767748734793"
+        },
+        {
+          "type": "deco-line",
+          "content": {
+            "color1": "#3b82f6",
+            "color2": "#8b5cf6",
+            "rotate": 0,
+            "width": 964
+          },
+          "style": {},
+          "position": {
+            "x": 18,
+            "y": 75
+          },
+          "size": {
+            "height": 2,
+            "width": 964
+          },
+          "rotation": 0,
+          "zIndex": 1,
+          "id": "element_1759767748734402"
+        },
+        {
+          "type": "list",
+          "content": {
+            "items": [
+              "动态数据绑定",
+              "交互组件库",
+              "排版可视化配置",
+              "多端同步预览"
+            ],
+            "title": "核心功能矩阵"
+          },
+          "style": {
+            "background": "#ffffff",
+            "borderRadius": "8px",
+            "boxShadow": "0 4px 6px rgba (79, 70, 229, 0.1)"
+          },
+          "position": {
+            "x": 9,
+            "y": 97
+          },
+          "size": {
+            "height": 214,
+            "width": 314
+          },
+          "rotation": 0,
+          "zIndex": 2,
+          "id": "element_1759767748734715"
+        },
+        {
+          "type": "chart",
+          "content": {
+            "chartOption": {
+              "series": [
+                {
+                  "data": [
+                    15,
+                    28,
+                    22,
+                    35
+                  ],
+                  "type": "bar"
+                }
+              ],
+              "title": {
+                "text": "季度销售增长率"
+              },
+              "xAxis": {
+                "data": [
+                  "Q1",
+                  "Q2",
+                  "Q3",
+                  "Q4"
+                ]
+              },
+              "yAxis": {}
+            }
+          },
+          "style": {
+            "background": "#ffffff",
+            "borderRadius": "8px",
+            "boxShadow": "0 4px 6px rgba (79, 70, 229, 0.1)"
+          },
+          "position": {
+            "x": 330,
+            "y": 87
+          },
+          "size": {
+            "height": 250,
+            "width": 311
+          },
+          "rotation": 0,
+          "zIndex": 2,
+          "id": "element_1759767748734241"
+        },
+        {
+          "type": "image",
+          "content": {
+            "src": "https://lf-bot-studio-plugin-resource.coze.cn/obj/bot-studio-platform-plugin-tos/artist/image/86daa6ab054c4c84bef2baac05a52137.png",
+            "originalSize": {
+              "width": 512,
+              "height": 512
+            },
+            "hasBeenEdited": true
+          },
+          "style": {
+            "borderRadius": "8px",
+            "boxShadow": "0 4px 6px rgba (79, 70, 229, 0.1)"
+          },
+          "position": {
+            "x": 582,
+            "y": 34
+          },
+          "size": {
+            "width": 512,
+            "height": 512
+          },
+          "rotation": 0,
+          "zIndex": 2,
+          "id": "element_175976774873412"
+        },
+        {
+          "type": "text",
+          "content": {
+            "body": "支持 ECharts 动态图表，可嵌入实时销售数据趋势动效（如：Q1-Q4 增长曲线）",
+            "title": "商务数据可视化"
+          },
+          "style": {
+            "background": "rgba (255,255,255,0.9)",
+            "borderRadius": "8px",
+            "padding": "12px"
+          },
+          "position": {
+            "x": 17,
+            "y": 361
+          },
+          "size": {
+            "height": 120,
+            "width": 311
+          },
+          "rotation": 0,
+          "zIndex": 3,
+          "id": "element_1759767748734991"
+        },
+        {
+          "type": "text",
+          "content": {
+            "body": "支持插入随堂测验组件，可结合动画演示案例演化过程（如：物理实验分步演示）",
+            "title": "教学互动设计"
+          },
+          "style": {
+            "background": "rgba (255,255,255,0.9)",
+            "borderRadius": "8px",
+            "padding": "12px"
+          },
+          "position": {
+            "x": 365,
+            "y": 377
+          },
+          "size": {
+            "height": 120,
+            "width": 311
+          },
+          "rotation": 0,
+          "zIndex": 3,
+          "id": "element_1759767748734706"
+        },
+        {
+          "type": "text",
+          "content": {
+            "body": "通过 JSON 配置实现：1. 主题色一键切换 2. 版式自适应调整 3. 多设备预览适配",
+            "title": "个性化视觉排版"
+          },
+          "style": {
+            "background": "rgba (255,255,255,0.9)",
+            "borderRadius": "8px",
+            "padding": "12px"
+          },
+          "position": {
+            "x": 687,
+            "y": 365
+          },
+          "size": {
+            "height": 120,
+            "width": 282
+          },
+          "rotation": 0,
+          "zIndex": 3,
+          "id": "element_175976774873462"
+        }
+      ]
+    },
+    {
+      "title": "用 SU3PT 验证产品能力",
+      "backgroundColor": "linear-gradient (135deg, #f8fafc 0%, #f1f5f9 100%)",
+      "backgroundImage": "",
+      "elements": [
+        {
+          "type": "text",
+          "content": {
+            "title": "用 SU3PT 验证产品能力"
+          },
+          "style": {
+            "color": "#1e293b",
+            "fontSize": "36px",
+            "fontWeight": "600",
+            "textAlign": "center"
+          },
+          "position": {
+            "x": 262,
+            "y": 30
+          },
+          "size": {
+            "height": 60,
+            "width": 500
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "id": "element_1759767748734995"
+        },
+        {
+          "type": "deco-line",
+          "content": {
+            "color1": "#6366f1",
+            "color2": "#a855f7",
+            "rotate": 0,
+            "width": 800
+          },
+          "style": {},
+          "position": {
+            "x": 112,
+            "y": 100
+          },
+          "size": {
+            "width": 300,
+            "height": 200
+          },
+          "rotation": 0,
+          "zIndex": 1,
+          "id": "element_1759767748734827"
+        },
+        {
+          "type": "icon-highlight",
+          "content": {
+            "color": "#6366f1",
+            "height": 160,
+            "icons": [
+              "<path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z'/>"
+            ],
+            "width": 280
+          },
+          "style": {},
+          "position": {
+            "x": 23,
+            "y": 130
+          },
+          "size": {
+            "width": 288,
+            "height": 166
+          },
+          "rotation": 0,
+          "zIndex": 2,
+          "id": "element_1759767748734572"
+        },
+        {
+          "type": "list",
+          "content": {
+            "items": [
+              "需求输入→大纲编辑→JSON 生成→前端修改→实时预览"
+            ],
+            "title": "验证流程"
+          },
+          "style": {
+            "color": "#334155",
+            "fontSize": "18px"
+          },
+          "position": {
+            "x": 70,
+            "y": 140
+          },
+          "size": {
+            "height": 140,
+            "width": 240
+          },
+          "rotation": 0,
+          "zIndex": 1,
+          "id": "element_175976774873481"
+        },
+        {
+          "type": "image",
+          "content": {
+            "src": "https://lf-bot-studio-plugin-resource.coze.cn/obj/bot-studio-platform-plugin-tos/artist/image/aa3b25359de94702acbb884ba403f0d4.png",
+            "originalSize": {
+              "width": 512,
+              "height": 512
+            },
+            "hasBeenEdited": true
+          },
+          "style": {},
+          "position": {
+            "x": 333,
+            "y": 133
+          },
+          "size": {
+            "width": 335,
+            "height": 361
+          },
+          "rotation": 0,
+          "zIndex": 1,
+          "id": "element_175976774873467"
+        },
+        {
+          "type": "icon-highlight",
+          "content": {
+            "color": "#10b981",
+            "height": 160,
+            "icons": [
+              "<path d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z'/>"
+            ],
+            "width": 280
+          },
+          "style": {},
+          "position": {
+            "x": 677,
+            "y": 297
+          },
+          "size": {
+            "width": 300,
+            "height": 200
+          },
+          "rotation": 0,
+          "zIndex": 2,
+          "id": "element_1759767748734109"
+        },
+        {
+          "type": "text",
+          "content": {
+            "body": "本答辩全部PPT 均由 SU3PT 自动生成 \n 平均制作效率提升 80%"
+          },
+          "style": {
+            "fontSize": "18px",
+            "lineHeight": "1.6"
+          },
+          "position": {
+            "x": 718,
+            "y": 354
+          },
+          "size": {
+            "height": 140,
+            "width": 240
+          },
+          "rotation": 0,
+          "zIndex": 1,
+          "id": "element_1759767748734384"
+        }
+      ]
+    },
+    {
+      "title": "SU3PT 的未来：更「智能」更「懂你」",
+      "backgroundColor": "#f8fafc",
+      "backgroundImage": "",
+      "elements": [
+        {
+          "type": "text",
+          "content": {
+            "body": "",
+            "title": "SU3PT 的未来：更「智能」更「懂你」"
+          },
+          "style": {
+            "color": "#1e293b",
+            "fontSize": "40px",
+            "textAlign": "left"
+          },
+          "position": {
+            "x": 50,
+            "y": 30
+          },
+          "size": {
+            "height": 80,
+            "width": 924
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "id": "element_1759767748734880"
+        },
+        {
+          "type": "deco-line",
+          "content": {
+            "color1": "#3b82f6",
+            "color2": "#6366f1",
+            "rotate": 0,
+            "width": 924
+          },
+          "style": {},
+          "position": {
+            "x": 50,
+            "y": 100
+          },
+          "size": {
+            "width": 300,
+            "height": 200
+          },
+          "rotation": 0,
+          "zIndex": 5,
+          "id": "element_175976774873440"
+        },
+        {
+          "type": "gradient-blob",
+          "content": {
+            "color": "#3b82f6",
+            "size": 300,
+            "x": 700,
+            "y": 400
+          },
+          "style": {},
+          "position": {
+            "x": 100,
+            "y": 100
+          },
+          "size": {
+            "width": 300,
+            "height": 200
+          },
+          "rotation": 0,
+          "zIndex": 1,
+          "id": "element_1759767748734801"
+        },
+        {
+          "type": "gradient-card",
+          "content": {
+            "children": {
+              "content": {
+                "items": [
+                  "解决形式大于内容问题",
+                  "专注信息传递本质，突破现有 AI PPT 重设计轻内容的局限"
+                ]
+              },
+              "type": "list"
+            },
+            "color1": "#60a5fa",
+            "color2": "#a5b4fc",
+            "height": 180,
+            "width": 280
+          },
+          "style": {},
+          "position": {
+            "x": 360,
+            "y": 130
+          },
+          "size": {
+            "width": 300,
+            "height": 200
+          },
+          "rotation": 0,
+          "zIndex": 20,
+          "id": "element_1759767748734740"
+        },
+        {
+          "type": "gradient-card",
+          "content": {
+            "children": {
+              "content": {
+                "items": [
+                  "自主数据搜集能力",
+                  "智能体自动爬取公开数据生成图表，提升数据可视化效率"
+                ]
+              },
+              "type": "list"
+            },
+            "color1": "#34d399",
+            "color2": "#6ee7b7",
+            "height": 180,
+            "width": 280
+          },
+          "style": {},
+          "position": {
+            "x": 360,
+            "y": 330
+          },
+          "size": {
+            "width": 300,
+            "height": 200
+          },
+          "rotation": 0,
+          "zIndex": 20,
+          "id": "element_1759767748734317"
+        },
+        {
+          "type": "gradient-card",
+          "content": {
+            "children": {
+              "content": {
+                "items": [
+                  "交互式用户引导",
+                  "通过多轮追问补全需求细节，降低使用门槛"
+                ]
+              },
+              "type": "list"
+            },
+            "color1": "#f59e0b",
+            "color2": "#fbbf24",
+            "height": 180,
+            "width": 280
+          },
+          "style": {},
+          "position": {
+            "x": 680,
+            "y": 130
+          },
+          "size": {
+            "width": 300,
+            "height": 200
+          },
+          "rotation": 0,
+          "zIndex": 20,
+          "id": "element_1759767748734564"
+        },
+        {
+          "type": "gradient-card",
+          "content": {
+            "children": {
+              "content": {
+                "items": [
+                  "可视化局部修改",
+                  "点击元素直接编辑的创新交互方式，提升修改效率"
+                ]
+              },
+              "type": "list"
+            },
+            "color1": "#818cf8",
+            "color2": "#c4b5fd",
+            "height": 180,
+            "width": 280
+          },
+          "style": {},
+          "position": {
+            "x": 680,
+            "y": 330
+          },
+          "size": {
+            "width": 300,
+            "height": 200
+          },
+          "rotation": 0,
+          "zIndex": 20,
+          "id": "element_1759767748734196"
+        }
+      ]
+    }
+  ],
+  "currentSlideIndex": 9,
+  "version": "1.0",
+  "exportDate": "2025-10-06T16:32:21.303Z",
+  "customElements": [
+    {
+      "type": "gradient-mask",
+      "template": "<div style='position:absolute; width:1024px; height:576px; background: radial-gradient(circle at 70% 30%, rgba(15,23,42,0) 0%, rgba(15,23,42,{{opacity}}) 100%);'></div>",
+      "description": "背景径向渐变蒙版，增强视觉层次感",
+      "variables": [
+        "opacity"
+      ]
+    },
+    {
+      "type": "gradient-highlight",
+      "template": "<div style='background: linear-gradient(135deg, {{color1}}, {{color2}}); border-radius: 12px; padding: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);'>\n <div style='display: flex; align-items: center; gap: 15px;'>\n <div style='background: {{iconBg}}; padding: 8px; border-radius: 50%;'>\n <img src='{{iconUrl}}' width='24' height='24'>\n </div>\n <div style='color: {{textColor}}; font-size: 16px;'>{{text}}</div>\n </div>\n</div>",
+      "description": "带渐变背景和图标的重点强调块",
+      "variables": [
+        "color1",
+        "color2",
+        "iconUrl",
+        "iconBg",
+        "textColor",
+        "text"
+      ]
+    },
+    {
+      "type": "security-shield",
+      "template": "<div style='position: relative; width: {{size}}px; height: {{size}}px;'>\n <div style='position: absolute; width: 100%; height: 100%; background: {{bgColor}}; border-radius: 50%; opacity: 0.2;'></div>\n <svg style='position: absolute; width: 70%; height: 70%; left: 15%; top: 15%;' viewBox='0 0 24 24'>\n <path fill='{{iconColor}}' d='M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z'/>\n </svg>\n</div>",
+      "description": "安全防护盾牌图标装饰元素",
+      "variables": [
+        "size",
+        "bgColor",
+        "iconColor"
+      ]
+    },
+    {
+      "type": "gradient-badge",
+      "template": "<div style='background: linear-gradient(135deg, {{color1}}, {{color2}}); border-radius: 8px; padding: 6px 12px; color: white; font-size: 14px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);'>{{text}}</div>",
+      "description": "渐变色徽章用于技术标签展示",
+      "variables": [
+        "text",
+        "color1",
+        "color2"
+      ]
+    },
+    {
+      "type": "dynamic-timeline",
+      "template": "<div style='position:relative; padding-left: 20px;'>{{each items}}<div style='margin-bottom: 15px;'><div style='position:absolute; left: -6px; width: 12px; height: 12px; background: {{color}}; border-radius: 50%;'></div><div style='font-size:16px; color:{{color}}; margin-bottom:5px;'>{{title}}</div><div style='font-size:14px; color:#666;'>{{content}}</div></div>{{/each}}</div>",
+      "description": "动态时间线展示技术演进",
+      "variables": [
+        "items",
+        "color"
+      ]
+    },
+    {
+      "type": "gradient-label",
+      "template": "<div style='background: linear-gradient(45deg, {{color1}}, {{color2}}); padding: 8px 15px; border-radius: 20px; color: white; font-size: 14px; display: inline-block;'>{{text}}</div>",
+      "description": "渐变色标签用于模块标识",
+      "variables": [
+        "text",
+        "color1",
+        "color2"
+      ]
+    },
+    {
+      "type": "deco-line",
+      "template": "<div style='height:2px; background: linear-gradient(90deg, {{color}} 0%, transparent 100%); margin:15px 0;'></div>",
+      "description": "装饰性渐变分割线",
+      "variables": [
+        "color"
+      ]
+    },
+    {
+      "type": "highlight-label",
+      "template": "<div style='position:absolute; left:{{x}}px; top:{{y}}px; padding:6px 12px; background:{{bgColor}}; border-radius:16px; font-size:14px; color:{{textColor}}; font-weight:500;'>{{text}}</div>",
+      "description": "高亮标签，用于关键点标注",
+      "variables": [
+        "x",
+        "y",
+        "bgColor",
+        "textColor",
+        "text"
+      ]
+    },
+    {
+      "type": "image-container",
+      "template": "<div style='position:relative; border:2px solid {{borderColor}}; border-radius:8px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.1);'>\n <img src='{{imageUrl}}' style='width:100%; height:100%; object-fit:cover;'>\n <div style='position:absolute; top:0; left:0; right:0; bottom:0; background:linear-gradient(45deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 60%);'></div>\n</div>",
+      "description": "带边框和渐变覆盖的图片容器",
+      "variables": [
+        "borderColor",
+        "imageUrl"
+      ]
+    },
+    {
+      "type": "gradient-card",
+      "template": "<div style='background:linear-gradient(135deg, {{startColor}} 0%, {{endColor}} 100%); padding:20px; border-radius:12px; box-shadow:0 4px 16px rgba(0,0,0,0.12); color:{{textColor}};'>\n {{each items}}\n <div style='margin-bottom:8px; font-size:16px;'>{{this}}</div>\n {{/each}}\n</div>",
+      "description": "渐变背景信息卡片",
+      "variables": [
+        "startColor",
+        "endColor",
+        "textColor",
+        "items"
+      ]
+    },
+    {
+      "type": "icon-highlight",
+      "template": "<div style='position:absolute; background:{{color}}20; border-left:4px solid {{color}}; padding:15px; border-radius:8px; width:{{width}}px; height:{{height}}px;'>\n {{each icons}}\n <div style='display:flex; align-items:center; margin:8px 0;'>\n <svg viewBox='0 0 24 24' width='20' height='20' style='fill:{{color}}; margin-right:12px;'>\n {{this}}\n </svg>\n  </div>\n {{/each}}\n</div>",
+      "description": "带图标的强调内容区块",
+      "variables": [
+        "color",
+        "width",
+        "height",
+        "icons"
+      ]
+    },
+    {
+      "type": "gradient-blob",
+      "template": "<div style='position:absolute; width:{{size}}px; height:{{size}}px; background:radial-gradient(circle at 30% 30%, {{color}} 0%, transparent 70%); opacity:0.15; transform:translate({{x}}px, {{y}}px);'></div>",
+      "description": "装饰性渐变斑点",
+      "variables": [
+        "color",
+        "size",
+        "x",
+        "y"
+      ]
+    }
+  ]
+}
