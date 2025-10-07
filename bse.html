@@ -1304,6 +1304,110 @@
                       this.content.hasBeenEdited = true;
                   }
               }
+              
+              // 覆盖父类的bindResizeEvent方法，实现图片元素的等比例缩放
+              bindResizeEvent(controlPoint, element) {
+                  let isResizing = false;
+                  let startX, startY, initialWidth, initialHeight, initialLeft, initialTop;
+                  let parentPosition = { x: 0, y: 0 };
+                  
+                  // 获取图片元素的宽高比
+                  const aspectRatio = this.content.originalSize ? 
+                      this.content.originalSize.width / this.content.originalSize.height : 16/9;
+                  
+                  this.resizeHandlers = this.resizeHandlers || {};
+                  const handlerKey = controlPoint.dataset.action + "-" + controlPoint.className;
+                  
+                  if (this.resizeHandlers[handlerKey]) {
+                      const { onMouseDown, onMouseMove, onMouseUp } = this.resizeHandlers[handlerKey];
+                      controlPoint.removeEventListener("mousedown", onMouseDown);
+                      document.removeEventListener("mousemove", onMouseMove);
+                      document.removeEventListener("mouseup", onMouseUp);
+                  }
+                  
+                  const onMouseDown = (e) => {
+                      isResizing = true;
+                      startX = e.clientX;
+                      startY = e.clientY;
+                      
+                      const rect = element.getBoundingClientRect();
+                      initialWidth = rect.width;
+                      initialHeight = rect.height;
+                      initialLeft = rect.left;
+                      initialTop = rect.top;
+                      
+                      const parentRect = element.parentElement.getBoundingClientRect();
+                      parentPosition.x = parentRect.left;
+                      parentPosition.y = parentRect.top;
+                      
+                      e.preventDefault();
+                      e.stopPropagation();
+                  };
+                  
+                  const onMouseMove = (e) => {
+                      if (!isResizing) return;
+                      
+                      const deltaX = e.clientX - startX;
+                      const deltaY = e.clientY - startY;
+                      
+                      const isRight = controlPoint.classList.contains("resize-tr") || controlPoint.classList.contains("resize-br");
+                      const isBottom = controlPoint.classList.contains("resize-bl") || controlPoint.classList.contains("resize-br");
+                      const isLeft = controlPoint.classList.contains("resize-tl") || controlPoint.classList.contains("resize-bl");
+                      const isTop = controlPoint.classList.contains("resize-tl") || controlPoint.classList.contains("resize-tr");
+                      
+                      let newWidth = initialWidth;
+                      let newHeight = initialHeight;
+                      let newLeft = initialLeft;
+                      let newTop = initialTop;
+                      
+                      // 根据拖动的控制点计算新的宽高
+                      // 对于图片元素，我们保持宽高比
+                      if (isRight || isLeft) {
+                          // 宽度变化时，高度按比例调整
+                          if (isRight) newWidth = Math.max(10, initialWidth + deltaX);
+                          if (isLeft) {
+                              newWidth = Math.max(10, initialWidth - deltaX);
+                              newLeft = initialLeft + deltaX;
+                          }
+                          newHeight = newWidth / aspectRatio;
+                      } else if (isBottom || isTop) {
+                          // 高度变化时，宽度按比例调整
+                          if (isBottom) newHeight = Math.max(10, initialHeight + deltaY);
+                          if (isTop) {
+                              newHeight = Math.max(10, initialHeight - deltaY);
+                              newTop = initialTop + deltaY;
+                          }
+                          newWidth = newHeight * aspectRatio;
+                      }
+                      
+                      const parentRect = element.parentElement.getBoundingClientRect();
+                      // 只限制元素不超出父容器，但允许调整到任何大小
+                      newLeft = Math.max(parentPosition.x, newLeft);
+                      newTop = Math.max(parentPosition.y, newTop);
+                      
+                      element.style.width = `${newWidth}px`;
+                      element.style.height = `${newHeight}px`;
+                      element.style.left = `${newLeft - parentPosition.x}px`;
+                      element.style.top = `${newTop - parentPosition.y}px`;
+                      
+                      this.size.width = newWidth;
+                      this.size.height = newHeight;
+                      this.position.x = newLeft - parentPosition.x;
+                      this.position.y = newTop - parentPosition.y;
+                  };
+                  
+                  const onMouseUp = () => {
+                      if (!isResizing) return;
+                      isResizing = false;
+                      this.onSizeChange();
+                  };
+                  
+                  controlPoint.addEventListener("mousedown", onMouseDown);
+                  document.addEventListener("mousemove", onMouseMove);
+                  document.addEventListener("mouseup", onMouseUp);
+                  
+                  this.resizeHandlers[handlerKey] = { onMouseDown, onMouseMove, onMouseUp };
+              }
 
               // 添加图片编辑功能
               enableEdit() {
@@ -2563,44 +2667,181 @@
     }
 }
               renderSlideList() {
-                  const slideList = document.getElementById("slide-list");
-                  if (!slideList) return;
+    const slideList = document.getElementById("slide-list");
+    if (!slideList) return;
 
-                  slideList.innerHTML = "";
+    // 清空列表
+    slideList.innerHTML = "";
 
-                  this.slides.forEach((slide, index) => {
-                      const slideItem = document.createElement("div");
-                      slideItem.className = `slide-item ${index === this.currentSlideIndex ? "active" : ""}`;
-                      slideItem.innerHTML = `
-                          ${index + 1}. ${slide.title}
-                          <div class="slide-actions">
-                              <div class="slide-action edit-slide" title="编辑标题">✏️</div>
-                              <div class="slide-action delete-slide" title="删除幻灯片">🗑️</div>
-                          </div>
-                      `;
+    this.slides.forEach((slide, index) => {
+        const slideItem = document.createElement("div");
+        slideItem.className = `slide-item ${index === this.currentSlideIndex ? "active" : ""}`;
+        slideItem.draggable = true;
+        slideItem.setAttribute("data-index", index);
+        slideItem.innerHTML = `
+            ${index + 1}. ${slide.title}
+            <div class="slide-actions">
+                <div class="slide-action edit-slide" title="编辑标题">✏️</div>
+                <div class="slide-action delete-slide" title="删除幻灯片">🗑️</div>
+            </div>
+        `;
 
-                      slideItem.addEventListener("click", () => {
-                          this.goToSlide(index);
-                      });
+        slideItem.addEventListener("click", () => {
+            this.goToSlide(index);
+        });
 
-                      const editBtn = slideItem.querySelector(".edit-slide");
-                      editBtn.addEventListener("click", (e) => {
-                          e.stopPropagation();
-                          const newTitle = prompt("请输入新标题:", slide.title);
-                          if (newTitle) {
-                              slide.title = newTitle;
-                              this.renderSlideList();
-                          }
-                      });
+        const editBtn = slideItem.querySelector(".edit-slide");
+        editBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const newTitle = prompt("请输入新标题:", slide.title);
+            if (newTitle) {
+                slide.title = newTitle;
+                this.renderSlideList();
+            }
+        });
 
-                      const deleteBtn = slideItem.querySelector(".delete-slide");
-                      deleteBtn.addEventListener("click", (e) => {
-                          e.stopPropagation();
-                          this.removeSlide(index);
-                      });
+        const deleteBtn = slideItem.querySelector(".delete-slide");
+        deleteBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            this.removeSlide(index);
+        });
 
-                      slideList.appendChild(slideItem);
-                  });
+        // 拖拽开始事件 - 使用dataTransfer传递索引
+        slideItem.addEventListener("dragstart", (e) => {
+            e.dataTransfer.effectAllowed = 'move';
+            // 使用dataTransfer传递拖拽索引，而不是局部变量
+            e.dataTransfer.setData('text/plain', index.toString());
+            slideItem.classList.add("dragging");
+            // 设置半透明效果以提供视觉反馈
+            slideItem.style.opacity = "0.5";
+        });
+
+        // 拖拽结束事件 - 清理拖拽状态
+        slideItem.addEventListener("dragend", () => {
+            slideItem.classList.remove("dragging");
+            slideItem.style.opacity = "1";
+            // 移除所有放置指示器
+            document.querySelectorAll(".slide-item.placeholder").forEach(el => el.remove());
+        });
+
+        // 拖拽经过事件 - 允许放置并显示放置位置
+        slideItem.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            
+            // 移除所有已存在的放置指示器
+            document.querySelectorAll(".slide-item.placeholder").forEach(el => el.remove());
+            
+            // 获取拖拽索引
+            const draggedIndex = parseInt(e.dataTransfer.getData('text/plain'));
+            
+            // 计算鼠标位置，决定是放在上方还是下方
+            const rect = slideItem.getBoundingClientRect();
+            const mouseY = e.clientY - rect.top;
+            const slideHeight = rect.height;
+            
+            // 避免在同一个元素上放置并检查拖拽索引有效性
+            if (draggedIndex !== index && !isNaN(draggedIndex)) {
+                // 创建放置指示器
+                const placeholder = document.createElement("div");
+                placeholder.className = "slide-item placeholder";
+                placeholder.style.backgroundColor = "rgba(52, 152, 219, 0.3)";
+                placeholder.style.height = "40px";
+                placeholder.style.marginBottom = "8px";
+                placeholder.style.borderRadius = "5px";
+                placeholder.style.border = "2px dashed #3498db";
+                 
+                if (mouseY < slideHeight / 2) {
+                    // 放在当前幻灯片上方
+                    slideList.insertBefore(placeholder, slideItem);
+                } else {
+                    // 放在当前幻灯片下方
+                    slideList.insertBefore(placeholder, slideItem.nextSibling);
+                }
+            }
+        });
+
+        // 放置事件 - 执行幻灯片移动
+        slideItem.addEventListener("drop", (e) => {
+            e.preventDefault();
+            
+            // 获取拖拽索引
+            const draggedIndex = parseInt(e.dataTransfer.getData('text/plain'));
+            
+            // 确保有拖拽的幻灯片
+            if (isNaN(draggedIndex)) return;
+            
+            // 计算最终目标位置
+            const rect = slideItem.getBoundingClientRect();
+            const mouseY = e.clientY - rect.top;
+            const slideHeight = rect.height;
+            let finalToIndex = index;
+            
+            if (mouseY < slideHeight / 2) {
+                // 放在当前幻灯片上方
+                finalToIndex = index;
+            } else {
+                // 放在当前幻灯片下方
+                finalToIndex = index + 1;
+            }
+            
+            // 如果拖拽到了列表末尾
+            if (finalToIndex > this.slides.length - 1) {
+                finalToIndex = this.slides.length;
+            }
+            
+            // 避免无效的移动
+            if (draggedIndex !== finalToIndex && draggedIndex >= 0 && finalToIndex >= 0 && finalToIndex <= this.slides.length) {
+                console.log('执行移动:', draggedIndex, '->', finalToIndex);
+                // 直接调用moveSlide方法处理移动
+                this.moveSlide(draggedIndex, finalToIndex);
+            }
+            
+            // 移除放置指示器
+            document.querySelectorAll(".slide-item.placeholder").forEach(el => el.remove());
+        });
+
+        slideList.appendChild(slideItem);
+    });
+}
+
+              // 移动幻灯片位置的方法
+              moveSlide(fromIndex, toIndex) {
+                  console.log('移动幻灯片前:', fromIndex, '->', toIndex);
+                  console.log('移动前slides数组:', this.slides.map(s => s.title));
+                  
+                  this.createSnapshot(); // 创建快照以便撤销
+                  
+                  // 调整目标位置，因为从原位置移除后，数组长度会减1
+                  if (fromIndex < toIndex) {
+                      toIndex--;
+                      console.log('调整后toIndex:', toIndex);
+                  }
+                  
+                  // 从原位置移除并插入到新位置
+                  const [movedSlide] = this.slides.splice(fromIndex, 1);
+                  this.slides.splice(toIndex, 0, movedSlide);
+                  
+                  console.log('移动后slides数组:', this.slides.map(s => s.title));
+                  
+                  // 更新当前幻灯片索引
+                  if (this.currentSlideIndex === fromIndex) {
+                      this.currentSlideIndex = toIndex;
+                  } else if (this.currentSlideIndex > fromIndex && this.currentSlideIndex <= toIndex) {
+                      this.currentSlideIndex--;
+                  } else if (this.currentSlideIndex < fromIndex && this.currentSlideIndex >= toIndex) {
+                      this.currentSlideIndex++;
+                  }
+                  
+                  console.log('更新后currentSlideIndex:', this.currentSlideIndex);
+                  
+                  // 重新渲染
+                  this.renderSlides();
+                  this.renderSlideList();
+                  
+                  // 保存到本地存储
+                  this.saveToLocalStorage();
+                  console.log('已保存到本地存储');
               }
 
               toggleEditMode() {
