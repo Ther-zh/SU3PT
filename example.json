@@ -27,7 +27,7 @@
           },
           "rotation": 0,
           "zIndex": 2,
-          "id": "element_1759846056238763"
+          "id": "element_1763373795343965"
         },
         {
           "type": "gradient-decorator",
@@ -46,7 +46,7 @@
           },
           "rotation": 0,
           "zIndex": 1,
-          "id": "element_1759846056238759"
+          "id": "element_1763373795343102"
         },
         {
           "type": "icon-badge",
@@ -69,7 +69,7 @@
           },
           "rotation": 0,
           "zIndex": 2,
-          "id": "element_1759846056238704"
+          "id": "element_1763373795343831"
         },
         {
           "type": "image",
@@ -96,7 +96,7 @@
           },
           "rotation": 0,
           "zIndex": 1,
-          "id": "element_1759846056238614"
+          "id": "element_1763373795343337"
         },
         {
           "type": "dynamic-divider",
@@ -115,7 +115,7 @@
           },
           "rotation": 0,
           "zIndex": 1,
-          "id": "element_1759846056238130"
+          "id": "element_1763373795343603"
         },
         {
           "type": "list",
@@ -141,13 +141,13 @@
           },
           "rotation": 0,
           "zIndex": 2,
-          "id": "element_175984605623826"
+          "id": "element_1763373795343368"
         },
         {
           "type": "text",
           "content": {
             "title": "",
-            "body": "演讲人：郑智航   时间：2025.10.8"
+            "body": "演讲人：Ther_zh   时间：2025.10.8"
           },
           "style": {},
           "position": {
@@ -160,7 +160,7 @@
           },
           "rotation": 0,
           "zIndex": 1,
-          "id": "element_1759846056238956"
+          "id": "element_1763373795343928"
         }
       ]
     },
@@ -186,7 +186,7 @@
           },
           "rotation": 0,
           "zIndex": 1,
-          "id": "element_1759846056238671"
+          "id": "element_1763373795343514"
         },
         {
           "type": "text",
@@ -210,7 +210,7 @@
           },
           "rotation": 0,
           "zIndex": 2,
-          "id": "element_1759846056238760"
+          "id": "element_1763373795343121"
         },
         {
           "type": "list",
@@ -253,7 +253,7 @@
           },
           "rotation": 0,
           "zIndex": 2,
-          "id": "element_1759846056238893"
+          "id": "element_1763373795343392"
         },
         {
           "type": "section-divider",
@@ -272,7 +272,7 @@
           },
           "rotation": 0,
           "zIndex": 1,
-          "id": "element_1759846056238680"
+          "id": "element_1763373795343376"
         }
       ]
     },
@@ -303,7 +303,7 @@
           },
           "rotation": 0,
           "zIndex": 2,
-          "id": "element_1759846056238671"
+          "id": "element_1763373795343984"
         },
         {
           "type": "deco-line",
@@ -324,7 +324,7 @@
           },
           "rotation": 0,
           "zIndex": 1,
-          "id": "element_1759846056238867"
+          "id": "element_1763373795343940"
         },
         {
           "type": "gradient-card",
@@ -344,7 +344,7 @@
           },
           "rotation": 0,
           "zIndex": 2,
-          "id": "element_1759846056238103"
+          "id": "element_1763373795343888"
         },
         {
           "type": "gradient-card",
@@ -364,7 +364,7 @@
           },
           "rotation": 0,
           "zIndex": 4,
-          "id": "element_1759846056238948"
+          "id": "element_1763373795343840"
         },
         {
           "type": "gradient-card",
@@ -384,7 +384,7 @@
           },
           "rotation": 0,
           "zIndex": 4,
-          "id": "element_1759846056238452"
+          "id": "element_1763373795343969"
         },
         {
           "type": "gradient-card",
@@ -404,7 +404,7 @@
           },
           "rotation": 0,
           "zIndex": 4,
-          "id": "element_175984605623869"
+          "id": "element_1763373795343829"
         }
       ]
     },
@@ -430,7 +430,7 @@
           },
           "rotation": 0,
           "zIndex": 1,
-          "id": "element_175984605623824"
+          "id": "element_1763373795343806"
         },
         {
           "type": "text",
@@ -454,7 +454,7 @@
           },
           "rotation": 0,
           "zIndex": 3,
-          "id": "element_17598460562387"
+          "id": "element_1763373795343198"
         },
         {
           "type": "dynamic-connector",
@@ -476,7 +476,7 @@
           },
           "rotation": 0,
           "zIndex": 2,
-          "id": "element_1759846056238356"
+          "id": "element_1763373795343417"
         },
         {
           "type": "image",
@@ -500,7 +500,7 @@
           },
           "rotation": 0,
           "zIndex": 3,
-          "id": "element_1759846056238428"
+          "id": "element_1763373795343747"
         }
       ]
     },
@@ -526,7 +526,7 @@
           },
           "rotation": 0,
           "zIndex": 1,
-          "id": "element_1759846056238175"
+          "id": "element_1763373795343332"
         },
         {
           "type": "text",
@@ -549,7 +549,7 @@
           },
           "rotation": 0,
           "zIndex": 2,
-          "id": "element_1759846056238515"
+          "id": "element_1763373795343910"
         },
         {
           "type": "gradient-decorator",
@@ -568,7 +568,7 @@
           },
           "rotation": 0,
           "zIndex": 2,
-          "id": "element_1759846056238862"
+          "id": "element_1763373795343399"
         },
         {
           "type": "gradient-card",
@@ -588,7 +588,7 @@
           },
           "rotation": 0,
           "zIndex": 3,
-          "id": "element_1759846056238115"
+          "id": "element_1763373795343973"
         },
         {
           "type": "gradient-card",
@@ -608,7 +608,7 @@
           },
           "rotation": 0,
           "zIndex": 3,
-          "id": "element_1759846056238940"
+          "id": "element_176337379534338"
         },
         {
           "type": "gradient-card",
@@ -628,7 +628,7 @@
           },
           "rotation": 0,
           "zIndex": 3,
-          "id": "element_1759846056238306"
+          "id": "element_1763373795343897"
         },
         {
           "type": "gradient-card",
@@ -648,7 +648,7 @@
           },
           "rotation": 0,
           "zIndex": 3,
-          "id": "element_1759846056238297"
+          "id": "element_1763373795343515"
         },
         {
           "type": "gradient-card",
@@ -668,7 +668,7 @@
           },
           "rotation": 0,
           "zIndex": 3,
-          "id": "element_1759846056238824"
+          "id": "element_1763373795343569"
         },
         {
           "type": "dynamic-divider",
@@ -687,7 +687,7 @@
           },
           "rotation": 0,
           "zIndex": 2,
-          "id": "element_175984605623879"
+          "id": "element_1763373795343618"
         }
       ]
     },
@@ -716,7 +716,7 @@
           },
           "rotation": 0,
           "zIndex": 1,
-          "id": "element_1759846056238806"
+          "id": "element_1763373795343296"
         },
         {
           "type": "list",
@@ -744,7 +744,7 @@
           },
           "rotation": 0,
           "zIndex": 2,
-          "id": "element_1759846056238962"
+          "id": "element_1763373795343955"
         },
         {
           "type": "gradient-card",
@@ -764,7 +764,162 @@
           },
           "rotation": 0,
           "zIndex": 2,
-          "id": "element_1759846056238697"
+          "id": "element_1763373795343909"
+        }
+      ]
+    },
+    {
+      "title": "JSON自定义类技术",
+      "backgroundColor": "#1A237E",
+      "backgroundImage": "",
+      "elements": [
+        {
+          "type": "gradient-overlay",
+          "content": {
+            "color1": "#00B4D8",
+            "color2": "#3A0CA3"
+          },
+          "style": {},
+          "position": {
+            "x": 0,
+            "y": 1
+          },
+          "size": {
+            "height": 576,
+            "width": 1024
+          },
+          "rotation": 0,
+          "zIndex": 1,
+          "id": "element_1763373795343334"
+        },
+        {
+          "type": "text",
+          "content": {
+            "body": "",
+            "title": "JSON自定义类技术"
+          },
+          "style": {
+            "color": "#E6F1FF",
+            "fontSize": "40px",
+            "fontWeight": "bold",
+            "textAlign": "center",
+            "textShadow": "0 2px 6px rgba(0,180,216,0.7)"
+          },
+          "position": {
+            "x": 200,
+            "y": 40
+          },
+          "size": {
+            "height": 80,
+            "width": 600
+          },
+          "rotation": 0,
+          "zIndex": 3,
+          "id": "element_1763373795343446"
+        },
+        {
+          "type": "gradient-decorator",
+          "content": {
+            "color1": "#00B4D8",
+            "color2": "#6366F1"
+          },
+          "style": {},
+          "position": {
+            "x": 250,
+            "y": 110
+          },
+          "size": {
+            "height": 4,
+            "width": 500
+          },
+          "rotation": 0,
+          "zIndex": 2,
+          "id": "element_176337379534375"
+        },
+        {
+          "type": "gradient-card",
+          "content": {
+            "color1": "rgba(99, 102, 241, 0.2)",
+            "color2": "rgba(139, 92, 246, 0.2)",
+            "content": "<div style='padding:25px;'><ul style='margin:0; padding-left:20px;'><li style='color:#E6F1FF; font-size:18px; line-height:1.6; text-shadow:0 1px 2px rgba(0,0,0,0.5); margin-bottom:10px;'>突破传统AI PPT元素类型固定局限</li><li style='color:#E6F1FF; font-size:18px; line-height:1.6; text-shadow:0 1px 2px rgba(0,0,0,0.5); margin-bottom:10px;'>JSON定义自定义元素类型名、模板、样式</li><li style='color:#E6F1FF; font-size:18px; line-height:1.6; text-shadow:0 1px 2px rgba(0,0,0,0.5); margin-bottom:10px;'>前端自动完成类注册、实例化与渲染</li><li style='color:#E6F1FF; font-size:18px; line-height:1.6; text-shadow:0 1px 2px rgba(0,0,0,0.5); margin-bottom:10px;'>用户无需编写核心代码</li><li style='color:#E6F1FF; font-size:18px; line-height:1.6; text-shadow:0 1px 2px rgba(0,0,0,0.5);'>支持品牌风格卡片、专属数据模块等</li></ul></div>"
+          },
+          "style": {
+            "borderRadius": "12px",
+            "border": "1px solid rgba(230, 241, 255, 0.3)"
+          },
+          "position": {
+            "x": 80,
+            "y": 150
+          },
+          "size": {
+            "height": 330,
+            "width": 550
+          },
+          "rotation": 0,
+          "zIndex": 2,
+          "id": "element_1763373795343323"
+        },
+        {
+          "type": "dynamic-divider",
+          "content": {
+            "color": "rgba(230, 241, 255, 0.3)",
+            "margin": "0 auto"
+          },
+          "style": {},
+          "position": {
+            "x": 650,
+            "y": 370
+          },
+          "size": {
+            "width": 350,
+            "height": 10
+          },
+          "rotation": 0,
+          "zIndex": 2,
+          "id": "element_1763373795343219"
+        },
+        {
+          "type": "gradient-card",
+          "content": {
+            "color1": "#6366F1",
+            "color2": "#8B5CF6",
+            "content": "<div style='padding:20px'><h4 style='color:white;text-shadow:0 1px 2px rgba(0,0,0,0.5)'>技术价值</h4><p style='color:white;text-shadow:0 1px 2px rgba(0,0,0,0.5)'>极大提升演示文稿的个性化与场景适配能力，自定义元素与基础元素无缝协同</p></div>"
+          },
+          "style": {
+            "boxShadow": "0 8px 24px rgba(99, 102, 241, 0.3)"
+          },
+          "position": {
+            "x": 650,
+            "y": 150
+          },
+          "size": {
+            "height": 200,
+            "width": 350
+          },
+          "rotation": 0,
+          "zIndex": 2,
+          "id": "element_1763373795343568"
+        },
+        {
+          "type": "deco-line",
+          "content": {
+            "endColor": "#8B5CF6",
+            "margin": "0 auto",
+            "startColor": "#00B4D8",
+            "width": 900
+          },
+          "style": {},
+          "position": {
+            "x": 62,
+            "y": 500
+          },
+          "size": {
+            "width": 900,
+            "height": 20
+          },
+          "rotation": 0,
+          "zIndex": 2,
+          "id": "element_1763373795343331"
         }
       ]
     },
@@ -790,7 +945,7 @@
           },
           "rotation": 0,
           "zIndex": 1,
-          "id": "element_1759846056238561"
+          "id": "element_1763373795343119"
         },
         {
           "type": "text",
@@ -813,7 +968,7 @@
           },
           "rotation": 0,
           "zIndex": 2,
-          "id": "element_1759846056238752"
+          "id": "element_1763373795343584"
         },
         {
           "type": "gradient-decorator",
@@ -832,7 +987,7 @@
           },
           "rotation": 0,
           "zIndex": 2,
-          "id": "element_175984605623879"
+          "id": "element_1763373795343525"
         },
         {
           "type": "module-container",
@@ -853,7 +1008,7 @@
           },
           "rotation": 0,
           "zIndex": 3,
-          "id": "element_1759846056238808"
+          "id": "element_1763373795343989"
         },
         {
           "type": "dynamic-connector",
@@ -875,7 +1030,7 @@
           },
           "rotation": 0,
           "zIndex": 2,
-          "id": "element_1759846056238298"
+          "id": "element_1763373795343717"
         },
         {
           "type": "module-container",
@@ -896,7 +1051,7 @@
           },
           "rotation": 0,
           "zIndex": 3,
-          "id": "element_175984605623891"
+          "id": "element_1763373795343860"
         },
         {
           "type": "dynamic-connector",
@@ -918,7 +1073,7 @@
           },
           "rotation": 0,
           "zIndex": 2,
-          "id": "element_175984605623841"
+          "id": "element_1763373795343316"
         },
         {
           "type": "module-container",
@@ -939,7 +1094,7 @@
           },
           "rotation": 0,
           "zIndex": 3,
-          "id": "element_175984605623841"
+          "id": "element_1763373795343485"
         },
         {
           "type": "deco-line",
@@ -960,7 +1115,7 @@
           },
           "rotation": 0,
           "zIndex": 2,
-          "id": "element_1759846056238575"
+          "id": "element_1763373795343452"
         },
         {
           "type": "text",
@@ -984,7 +1139,7 @@
           },
           "rotation": 0,
           "zIndex": 3,
-          "id": "element_1759846056238227"
+          "id": "element_176337379534365"
         }
       ]
     },
@@ -1015,7 +1170,7 @@
           },
           "rotation": 0,
           "zIndex": 1,
-          "id": "element_17598466462167"
+          "id": "element_1763373795343639"
         },
         {
           "type": "image",
@@ -1039,7 +1194,7 @@
           },
           "rotation": 0,
           "zIndex": 1,
-          "id": "element_1759846727608985"
+          "id": "element_1763373795343505"
         },
         {
           "type": "image",
@@ -1063,7 +1218,7 @@
           },
           "rotation": 0,
           "zIndex": 1,
-          "id": "element_1759846920005641"
+          "id": "element_1763373795343579"
         },
         {
           "type": "image",
@@ -1087,162 +1242,7 @@
           },
           "rotation": 0,
           "zIndex": 1,
-          "id": "element_1759846977686207"
-        }
-      ]
-    },
-    {
-      "title": "JSON自定义类技术",
-      "backgroundColor": "#1A237E",
-      "backgroundImage": "",
-      "elements": [
-        {
-          "type": "gradient-overlay",
-          "content": {
-            "color1": "#00B4D8",
-            "color2": "#3A0CA3"
-          },
-          "style": {},
-          "position": {
-            "x": 0,
-            "y": 1
-          },
-          "size": {
-            "height": 576,
-            "width": 1024
-          },
-          "rotation": 0,
-          "zIndex": 1,
-          "id": "element_1759846056238672"
-        },
-        {
-          "type": "text",
-          "content": {
-            "body": "",
-            "title": "JSON自定义类技术"
-          },
-          "style": {
-            "color": "#E6F1FF",
-            "fontSize": "40px",
-            "fontWeight": "bold",
-            "textAlign": "center",
-            "textShadow": "0 2px 6px rgba(0,180,216,0.7)"
-          },
-          "position": {
-            "x": 200,
-            "y": 40
-          },
-          "size": {
-            "height": 80,
-            "width": 600
-          },
-          "rotation": 0,
-          "zIndex": 3,
-          "id": "element_1759846056238761"
-        },
-        {
-          "type": "gradient-decorator",
-          "content": {
-            "color1": "#00B4D8",
-            "color2": "#6366F1"
-          },
-          "style": {},
-          "position": {
-            "x": 250,
-            "y": 110
-          },
-          "size": {
-            "height": 4,
-            "width": 500
-          },
-          "rotation": 0,
-          "zIndex": 2,
-          "id": "element_1759846056238197"
-        },
-        {
-          "type": "gradient-card",
-          "content": {
-            "color1": "rgba(99, 102, 241, 0.2)",
-            "color2": "rgba(139, 92, 246, 0.2)",
-            "content": "<div style='padding:25px;'><ul style='margin:0; padding-left:20px;'><li style='color:#E6F1FF; font-size:18px; line-height:1.6; text-shadow:0 1px 2px rgba(0,0,0,0.5); margin-bottom:10px;'>突破传统AI PPT元素类型固定局限</li><li style='color:#E6F1FF; font-size:18px; line-height:1.6; text-shadow:0 1px 2px rgba(0,0,0,0.5); margin-bottom:10px;'>JSON定义自定义元素类型名、模板、样式</li><li style='color:#E6F1FF; font-size:18px; line-height:1.6; text-shadow:0 1px 2px rgba(0,0,0,0.5); margin-bottom:10px;'>前端自动完成类注册、实例化与渲染</li><li style='color:#E6F1FF; font-size:18px; line-height:1.6; text-shadow:0 1px 2px rgba(0,0,0,0.5); margin-bottom:10px;'>用户无需编写核心代码</li><li style='color:#E6F1FF; font-size:18px; line-height:1.6; text-shadow:0 1px 2px rgba(0,0,0,0.5);'>支持品牌风格卡片、专属数据模块等</li></ul></div>"
-          },
-          "style": {
-            "borderRadius": "12px",
-            "border": "1px solid rgba(230, 241, 255, 0.3)"
-          },
-          "position": {
-            "x": 80,
-            "y": 150
-          },
-          "size": {
-            "height": 330,
-            "width": 550
-          },
-          "rotation": 0,
-          "zIndex": 2,
-          "id": "element_1759846056238776"
-        },
-        {
-          "type": "dynamic-divider",
-          "content": {
-            "color": "rgba(230, 241, 255, 0.3)",
-            "margin": "0 auto"
-          },
-          "style": {},
-          "position": {
-            "x": 650,
-            "y": 370
-          },
-          "size": {
-            "width": 350,
-            "height": 10
-          },
-          "rotation": 0,
-          "zIndex": 2,
-          "id": "element_1759846056238903"
-        },
-        {
-          "type": "gradient-card",
-          "content": {
-            "color1": "#6366F1",
-            "color2": "#8B5CF6",
-            "content": "<div style='padding:20px'><h4 style='color:white;text-shadow:0 1px 2px rgba(0,0,0,0.5)'>技术价值</h4><p style='color:white;text-shadow:0 1px 2px rgba(0,0,0,0.5)'>极大提升演示文稿的个性化与场景适配能力，自定义元素与基础元素无缝协同</p></div>"
-          },
-          "style": {
-            "boxShadow": "0 8px 24px rgba(99, 102, 241, 0.3)"
-          },
-          "position": {
-            "x": 650,
-            "y": 150
-          },
-          "size": {
-            "height": 200,
-            "width": 350
-          },
-          "rotation": 0,
-          "zIndex": 2,
-          "id": "element_1759846056238962"
-        },
-        {
-          "type": "deco-line",
-          "content": {
-            "endColor": "#8B5CF6",
-            "margin": "0 auto",
-            "startColor": "#00B4D8",
-            "width": 900
-          },
-          "style": {},
-          "position": {
-            "x": 62,
-            "y": 500
-          },
-          "size": {
-            "width": 900,
-            "height": 20
-          },
-          "rotation": 0,
-          "zIndex": 2,
-          "id": "element_1759846056238192"
+          "id": "element_1763373795343129"
         }
       ]
     },
@@ -1268,7 +1268,7 @@
           },
           "rotation": 0,
           "zIndex": 1,
-          "id": "element_1759846056238994"
+          "id": "element_1763373795343805"
         },
         {
           "type": "text",
@@ -1292,7 +1292,7 @@
           },
           "rotation": 0,
           "zIndex": 3,
-          "id": "element_1759846056238200"
+          "id": "element_1763373795343756"
         },
         {
           "type": "gradient-decorator",
@@ -1311,7 +1311,7 @@
           },
           "rotation": 0,
           "zIndex": 2,
-          "id": "element_1759846056238710"
+          "id": "element_1763373795343829"
         },
         {
           "type": "gradient-card",
@@ -1334,7 +1334,7 @@
           },
           "rotation": 0,
           "zIndex": 3,
-          "id": "element_1759846056238350"
+          "id": "element_1763373795343265"
         },
         {
           "type": "icon-badge",
@@ -1353,7 +1353,7 @@
           },
           "rotation": 0,
           "zIndex": 4,
-          "id": "element_1759846056238321"
+          "id": "element_1763373795343215"
         },
         {
           "type": "gradient-card",
@@ -1376,7 +1376,7 @@
           },
           "rotation": 0,
           "zIndex": 3,
-          "id": "element_1759846056238255"
+          "id": "element_1763373795343278"
         },
         {
           "type": "icon-badge",
@@ -1395,7 +1395,7 @@
           },
           "rotation": 0,
           "zIndex": 4,
-          "id": "element_1759846056238221"
+          "id": "element_1763373795343733"
         },
         {
           "type": "gradient-card",
@@ -1418,7 +1418,7 @@
           },
           "rotation": 0,
           "zIndex": 3,
-          "id": "element_1759846056238299"
+          "id": "element_1763373795343924"
         },
         {
           "type": "icon-badge",
@@ -1437,7 +1437,7 @@
           },
           "rotation": 0,
           "zIndex": 4,
-          "id": "element_1759846056238211"
+          "id": "element_1763373795343804"
         },
         {
           "type": "gradient-card",
@@ -1460,7 +1460,7 @@
           },
           "rotation": 0,
           "zIndex": 3,
-          "id": "element_1759846056238410"
+          "id": "element_1763373795343730"
         },
         {
           "type": "icon-badge",
@@ -1479,7 +1479,7 @@
           },
           "rotation": 0,
           "zIndex": 4,
-          "id": "element_17598460562381"
+          "id": "element_1763373795343104"
         },
         {
           "type": "dynamic-divider",
@@ -1498,7 +1498,7 @@
           },
           "rotation": 0,
           "zIndex": 2,
-          "id": "element_1759846056238853"
+          "id": "element_1763373795343662"
         }
       ]
     },
@@ -1527,7 +1527,7 @@
           },
           "rotation": 0,
           "zIndex": 1,
-          "id": "element_1759846056238102"
+          "id": "element_1763373795343992"
         },
         {
           "type": "list",
@@ -1554,7 +1554,7 @@
           },
           "rotation": 0,
           "zIndex": 2,
-          "id": "element_1759846056238817"
+          "id": "element_1763373795343604"
         },
         {
           "type": "gradient-card",
@@ -1574,7 +1574,7 @@
           },
           "rotation": 0,
           "zIndex": 2,
-          "id": "element_1759846056238589"
+          "id": "element_1763373795343274"
         }
       ]
     },
@@ -1604,80 +1604,14 @@
           },
           "rotation": 0,
           "zIndex": 1,
-          "id": "element_17598460562389"
-        },
-        {
-          "type": "text",
-          "content": {
-            "title": "分工："
-          },
-          "style": {
-            "color": "#cbd5e1",
-            "fontSize": "24px",
-            "textAlign": "center"
-          },
-          "position": {
-            "x": 350,
-            "y": 320
-          },
-          "size": {
-            "height": 40,
-            "width": 300
-          },
-          "rotation": 0,
-          "zIndex": 1,
-          "id": "element_1759846056238122"
-        },
-        {
-          "type": "text",
-          "content": {
-            "title": "郑智航：工作流构建、html及Coze前端构建、PPT制作及展示"
-          },
-          "style": {
-            "color": "#e2e8f0",
-            "fontSize": "18px",
-            "textAlign": "center"
-          },
-          "position": {
-            "x": 50,
-            "y": 380
-          },
-          "size": {
-            "height": 30,
-            "width": 900
-          },
-          "rotation": 0,
-          "zIndex": 1,
-          "id": "element_1759846056238854"
-        },
-        {
-          "type": "text",
-          "content": {
-            "title": "张浩：工作流搭建、产品测试与改进、PPT制作"
-          },
-          "style": {
-            "color": "#e2e8f0",
-            "fontSize": "18px",
-            "textAlign": "center"
-          },
-          "position": {
-            "x": 50,
-            "y": 420
-          },
-          "size": {
-            "height": 30,
-            "width": 900
-          },
-          "rotation": 0,
-          "zIndex": 1,
-          "id": "element_1759846056238124"
+          "id": "element_1763373795343879"
         }
       ]
     }
   ],
-  "currentSlideIndex": 7,
+  "currentSlideIndex": 0,
   "version": "1.0",
-  "exportDate": "2025-10-07T14:24:08.060Z",
+  "exportDate": "2025-11-17T10:03:57.459Z",
   "customElements": [
     {
       "type": "gradient-overlay",

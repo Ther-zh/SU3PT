@@ -527,7 +527,7 @@
     <div id="app">
       <!-- 侧边栏 -->
       <div id="sidebar">
-        <div class="logo">AI PPT</div>
+        <div class="logo">SU3PT</div>
 
         <div class="mode-toggle">
           <div class="mode-btn active" id="present-mode">放映模式</div>
@@ -1064,6 +1064,9 @@
               updateContent(newContent) {
                   this.content = { ...this.content, ...newContent };
                   this.updateElement();
+                  if (window.pptManager) {
+                    window.pptManager.saveToLocalStorage();
+                }
               }
 
               updateStyle(newStyle) {
@@ -3576,6 +3579,9 @@
                       const navButtons = document.querySelector(".nav-buttons");
                       if (navButtons) navButtons.style.display = "none";
 
+                      // 添加全屏模式下的点击事件监听器
+                      this.addFullscreenClickHandler();
+
                       setTimeout(() => {
                           this.renderSlides();
                           this.zoomToFitFullscreen();
@@ -3593,11 +3599,93 @@
                       const navButtons = document.querySelector(".nav-buttons");
                       if (navButtons) navButtons.style.display = "flex";
 
+                      // 移除全屏模式下的点击事件监听器
+                      this.removeFullscreenClickHandler();
+
                       setTimeout(() => {
                           this.resetSlideStyles();
                           this.renderSlides();
                       }, 100);
                   }
+              }
+
+              // 添加全屏模式下的点击翻页功能
+              addFullscreenClickHandler() {
+                  const presentationArea = document.getElementById("presentation-area");
+                  if (!presentationArea) return;
+
+                  this.fullscreenClickHandler = (e) => {
+                      // 确保只有直接点击presentation-area才触发翻页
+                      if (e.target === presentationArea || e.target === presentationArea.firstElementChild) {
+                          // 计算屏幕宽度的中点
+                          const midpoint = window.innerWidth / 2;
+                           
+                          // 根据点击位置决定翻页方向
+                          if (e.clientX < midpoint && this.currentSlideIndex > 0) {
+                              // 点击屏幕左侧，显示上一页
+                              this.prevSlide();
+                              this.showClickFeedback(e.clientX, e.clientY, 'left');
+                          } else if (e.clientX >= midpoint && this.currentSlideIndex < this.slides.length - 1) {
+                              // 点击屏幕右侧，显示下一页
+                              this.nextSlide();
+                              this.showClickFeedback(e.clientX, e.clientY, 'right');
+                          }
+                      }
+                  };
+
+                  presentationArea.addEventListener('click', this.fullscreenClickHandler);
+              }
+
+              // 移除全屏模式下的点击事件监听器
+              removeFullscreenClickHandler() {
+                  const presentationArea = document.getElementById("presentation-area");
+                  if (!presentationArea || !this.fullscreenClickHandler) return;
+
+                  presentationArea.removeEventListener('click', this.fullscreenClickHandler);
+                  this.fullscreenClickHandler = null;
+              }
+
+              // 显示点击反馈效果
+              showClickFeedback(x, y, direction) {
+                  // 创建反馈元素
+                  const feedback = document.createElement('div');
+                  feedback.className = 'click-feedback';
+                  feedback.style.position = 'fixed';
+                  feedback.style.left = `${x}px`;
+                  feedback.style.top = `${y}px`;
+                  feedback.style.width = '60px';
+                  feedback.style.height = '60px';
+                  feedback.style.borderRadius = '50%';
+                  feedback.style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
+                  feedback.style.transform = 'translate(-50%, -50%) scale(0)';
+                  feedback.style.opacity = '0';
+                  feedback.style.pointerEvents = 'none';
+                  feedback.style.zIndex = '9999';
+                  feedback.style.transition = 'all 0.4s ease-out';
+
+                  // 添加图标指示方向
+                  if (direction === 'left') {
+                      feedback.innerHTML = '<span style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 20px;">←</span>';
+                  } else {
+                      feedback.innerHTML = '<span style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 20px;">→</span>';
+                  }
+
+                  document.body.appendChild(feedback);
+
+                  // 触发动画
+                  setTimeout(() => {
+                      feedback.style.transform = 'translate(-50%, -50%) scale(1)';
+                      feedback.style.opacity = '1';
+                  }, 10);
+
+                  // 移除反馈元素
+                  setTimeout(() => {
+                      feedback.style.transform = 'translate(-50%, -50%) scale(1.5)';
+                      feedback.style.opacity = '0';
+                      setTimeout(() => {
+                          document.body.removeChild(feedback);
+                      }, 400);
+                  }, 600);
               }
 
               // 缩放适配全屏的方法
