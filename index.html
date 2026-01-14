@@ -8,6 +8,8 @@
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <!-- PPTXGenJS库将在需要时动态加载，使用更可靠的CDN源 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- 可编辑PPTX导出模块 -->
+    <script src="pptx-exporter.js"></script>
     <style>
       :root {
         --primary-color: #3498db;
@@ -978,19 +980,30 @@
                       }
 
                       const parentRect = element.parentElement.getBoundingClientRect();
-                      // 只限制元素不超出父容器，但允许调整到任何大小
-                      newLeft = Math.max(parentPosition.x, newLeft);
-                      newTop = Math.max(parentPosition.y, newTop);
-
+                      const parentStyle = window.getComputedStyle(element.parentElement);
+                      const parentPaddingLeft = parseInt(parentStyle.paddingLeft) || 0;
+                      const parentPaddingTop = parseInt(parentStyle.paddingTop) || 0;
+                      
+                      // 计算相对于父容器的位置（考虑padding）
+                      const parentPosition = {
+                          x: parentRect.left + parentPaddingLeft,
+                          y: parentRect.top + parentPaddingTop
+                      };
+                      
+                      // 只限制元素不超出父容器内容区域
+                      newLeft = Math.max(parentPaddingLeft, newLeft);
+                      newTop = Math.max(parentPaddingTop, newTop);
+                      
                       element.style.width = `${newWidth}px`;
                       element.style.height = `${newHeight}px`;
-                      element.style.left = `${newLeft - parentPosition.x}px`;
-                      element.style.top = `${newTop - parentPosition.y}px`;
-
+                      element.style.left = `${newLeft}px`;
+                      element.style.top = `${newTop}px`;
+                      
+                      // 保存相对于父容器的位置（减去padding）
                       this.size.width = newWidth;
                       this.size.height = newHeight;
-                      this.position.x = newLeft - parentPosition.x;
-                      this.position.y = newTop - parentPosition.y;
+                      this.position.x = newLeft - parentPaddingLeft;
+                      this.position.y = newTop - parentPaddingTop;
                   };
 
                   const onMouseUp = () => {
@@ -1077,9 +1090,14 @@
               updateElement() {
                   const element = document.getElementById(this.id);
                   if (element) {
-                      const newElement = this.render();
-                      element.outerHTML = newElement;
-
+                      // 直接更新现有元素，而不是重新创建
+                      element.style.left = `${this.position.x}px`;
+                      element.style.top = `${this.position.y}px`;
+                      element.style.width = `${this.size.width}px`;
+                      element.style.height = `${this.size.height}px`;
+                      element.style.transform = `rotate(${this.rotation}deg)`;
+                      element.style.zIndex = this.zIndex;
+                      
                       if (this.isDraggable) {
                           setTimeout(() => this.enableEdit(), 0);
                       }
@@ -3019,8 +3037,11 @@
                       if (exportType === 'pdf') {
                           // PDF导出
                           await this.exportToPDF();
+                      } else if (exportType === 'editable-pptx') {
+                          // 可编辑PPTX导出
+                          await this.exportToEditablePPTX();
                       } else if (exportType === 'pptx') {
-                          // PPT导出
+                          // PPT导出（截图版）
                           await this.saveAsPPT();
                       }
                   } catch (error) {
@@ -3051,8 +3072,11 @@
                           <div style="background: white; padding: 20px; border-radius: 8px; width: 400px; max-width: 90vw;">
                               <h3 style="margin-bottom: 20px;">选择导出格式</h3>
                               <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+                                  <button data-type="editable-pptx" style="padding: 15px; border: 2px solid #3498db; border-radius: 4px; cursor: pointer; background-color: #e8f4fc; font-weight: bold;">
+                                      ✨ 导出为可编辑PPTX（推荐）
+                                  </button>
                                   <button data-type="pptx" style="padding: 15px; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; background-color: #f8f9fa;">
-                                      保存为PPT
+                                      保存为PPT（截图版）
                                   </button>
                                   <button data-type="pdf" style="padding: 15px; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; background-color: #f8f9fa;">
                                       保存为PDF
@@ -3231,7 +3255,7 @@
                                       await new Promise((resolve, reject) => {
                                           const script = document.createElement("script");
                                           // 使用jsdelivr CDN替代unpkg
-                                          script.src = "https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgenjs.min.js";
+                                          script.src = "https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgenjs.bundle.js";
                                           script.onload = () => {
                                               console.log("PptxGenJS库加载完成(jsdelivr)，耗时:", Date.now() - startTime, "ms");
                                               resolve();
@@ -3245,9 +3269,9 @@
                                   } catch (e) {
                                       console.warn("主CDN加载失败，尝试备用CDN");
                                       // 尝试备用CDN源
-                                      await new Promise((resolve, reject) => {
-                                          const script = document.createElement("script");
-                                          script.src = "https://cdn.jsdelivr.net/npm/pptxgenjs";
+                                          await new Promise((resolve, reject) => {
+                                              const script = document.createElement("script");
+                                              script.src = "https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgenjs.bundle.js";
                                           script.onload = () => {
                                               console.log("PptxGenJS库加载完成(备用CDN)，耗时:", Date.now() - startTime, "ms");
                                               resolve();
@@ -3410,6 +3434,117 @@
                       console.error("导出PPT失败:", error);
                       alert("导出PPT失败，请重试或检查控制台错误信息。");
                   }
+              }
+
+              // 导出为可编辑PPTX
+              async exportToEditablePPTX() {
+                  try {
+                      console.log("开始可编辑PPTX导出流程");
+                      
+                      // 检查PPTXExporter是否可用
+                      if (!window.PPTXExporter) {
+                          alert("PPTX导出模块未加载，请刷新页面重试。");
+                          console.error("PPTXExporter未找到");
+                          return;
+                      }
+                      
+                      // 获取演示文稿数据
+                      const presentationData = this.getPresentationData();
+                      if (!presentationData || !presentationData.slides || presentationData.slides.length === 0) {
+                          alert("没有可导出的幻灯片，请先添加幻灯片。");
+                          return;
+                      }
+                      
+                      console.log("准备导出", presentationData.slides.length, "张幻灯片");
+                      
+                      // 显示加载中提示
+                      const loadingAlert = document.createElement('div');
+                      loadingAlert.id = "editable-pptx-loading-alert";
+                      loadingAlert.style.cssText = `
+                          position: fixed;
+                          top: 50%;
+                          left: 50%;
+                          transform: translate(-50%, -50%);
+                          background: white;
+                          padding: 30px 50px;
+                          border-radius: 12px;
+                          box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+                          z-index: 10000;
+                          font-size: 16px;
+                          text-align: center;
+                          border: 2px solid #3498db;
+                      `;
+                      loadingAlert.innerHTML = `
+                          <div style="margin-bottom: 15px; font-size: 24px;">⏳</div>
+                          <div>正在生成可编辑PPTX...</div>
+                          <div style="margin-top: 10px; font-size: 12px; color: #666;">
+                              共 ${presentationData.slides.length} 张幻灯片
+                          </div>
+                      `;
+                      document.body.appendChild(loadingAlert);
+                      
+                      try {
+                          // 调用PPTXExporter生成PPTX
+                          const result = await window.PPTXExporter.generate(presentationData);
+                          
+                          if (result.success) {
+                              console.log("可编辑PPTX导出成功:", result.fileName);
+                              showNotification(`可编辑PPTX导出成功！文件名: ${result.fileName}`, 'success');
+                          } else {
+                              console.error("可编辑PPTX导出失败:", result.error);
+                              alert(`可编辑PPTX导出失败: ${result.error}`);
+                          }
+                      } finally {
+                          // 移除加载提示
+                          if (loadingAlert.parentNode === document.body) {
+                              document.body.removeChild(loadingAlert);
+                          }
+                      }
+                  } catch (error) {
+                      console.error("导出可编辑PPTX失败:", error);
+                      alert("导出可编辑PPTX失败，请重试或检查控制台错误信息。");
+                  }
+              }
+
+              // 获取演示文稿数据
+              getPresentationData() {
+                  const slidesData = [];
+                  
+                  for (let i = 0; i < this.slides.length; i++) {
+                      const slide = this.slides[i];
+                      const slideData = {
+                          title: slide.title || `幻灯片 ${i + 1}`,
+                          backgroundColor: slide.backgroundColor || '#ffffff',
+                          backgroundImage: slide.backgroundImage || '',
+                          elements: []
+                      };
+                      
+                      if (slide.elements && slide.elements.length > 0) {
+                          slide.elements.forEach(element => {
+                              if (element) {
+                                  slideData.elements.push({
+                                      type: element.type,
+                                      content: element.content,
+                                      style: element.style,
+                                      position: { ...element.position },
+                                      size: { ...element.size },
+                                      rotation: element.rotation || 0,
+                                      zIndex: element.zIndex || 0,
+                                      id: element.id
+                                  });
+                              }
+                          });
+                      }
+                      
+                      slidesData.push(slideData);
+                  }
+                  
+                  return {
+                      slides: slidesData,
+                      currentSlideIndex: this.currentSlideIndex,
+                      version: '1.0',
+                      exportDate: new Date().toISOString()
+                  };
               }
 
               bindEvents() {

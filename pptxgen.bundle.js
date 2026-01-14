@@ -1,0 +1,2 @@
+/* PptxGenJS 3.12.0 @ 2025-06-25T23:35:35.101Z */
+!function(e){"object"==typeof exports&&"undefined"!=typeof module?module.exports=e():"function"==typeof define&&define.amd?define([],e):("undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof self?self:this).PptxGenJS=e()}
