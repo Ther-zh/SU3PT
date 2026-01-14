@@ -21,7 +21,7 @@
         }
 
         const script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs/dist/pptxgen.bundle.js';
+        script.src = 'https://unpkg.com/pptxgenjs@3.12.0/dist/pptxgen.bundle.js';
         script.onload = () => {
           if (window.PptxGenJS) {
             this.pptxgen = new PptxGenJS();
@@ -98,26 +98,42 @@
         const img = new Image();
         img.crossOrigin = 'anonymous';
         
+        // 添加超时处理
+        const timeout = setTimeout(() => {
+          console.error('图片加载超时:', url);
+          reject(new Error('图片加载超时: ' + url));
+        }, 10000); // 10秒超时
+        
         img.onload = function() {
+          clearTimeout(timeout);
           try {
             const canvas = document.createElement('canvas');
-            canvas.width = img.width;
-            canvas.height = img.height;
+            // 限制图片尺寸，防止内存溢出
+            const maxSize = 2048;
+            const width = Math.min(img.width, maxSize);
+            const height = Math.min(img.height, maxSize);
+            
+            canvas.width = width;
+            canvas.height = height;
             
             const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0);
+            ctx.drawImage(img, 0, 0, width, height);
             
             const base64Data = canvas.toDataURL('image/png').split(',')[1];
             resolve(base64Data);
           } catch (error) {
+            console.error('图片转换Canvas错误:', error);
             reject(new Error('图片转换失败: ' + error.message));
           }
         };
         
-        img.onerror = function() {
+        img.onerror = function(e) {
+          clearTimeout(timeout);
+          console.error('图片加载失败:', url, e);
           reject(new Error('图片加载失败: ' + url));
         };
         
+        console.log('开始加载图片:', url);
         img.src = url;
       });
     },
@@ -247,8 +263,14 @@
           const content = element.content || {};
           let imageUrl = content.url || content.src || '';
           
+          this.log('info', '处理图片元素', { 
+            hasUrl: !!content.url, 
+            hasSrc: !!content.src,
+            imageUrl: imageUrl.substring(0, 100)
+          });
+          
           if (!imageUrl) {
-            this.log('warn', '图片元素缺少URL，跳过');
+            this.log('warn', '图片元素缺少URL，跳过', { content: Object.keys(content) });
             resolve();
             return;
           }
@@ -257,19 +279,22 @@
           const size = element.size || { width: 200, height: 200 };
 
           try {
+            this.log('info', '开始加载图片', { url: imageUrl });
             const base64Data = await this.imageToBase64(imageUrl);
+            
+            if (!base64Data) {
+              this.log('error', '图片转换失败，base64为空');
+              this.addPlaceholderImage(slide, element);
+              resolve();
+              return;
+            }
             
             const imageOptions = {
               x: this.pxToInch(position.x),
               y: this.pxToInch(position.y),
               w: this.pxToInch(size.width),
               h: this.pxToInch(size.height),
-              data: `data:image/png;base64,${base64Data}`,
-              sizing: {
-                type: 'contain',
-                w: size.width,
-                h: size.height
-              }
+              data: `data:image/png;base64,${base64Data}`
             };
 
             if (element.rotation) {
@@ -277,9 +302,13 @@
             }
 
             slide.addImage(imageOptions);
-            this.log('info', '图片元素添加成功', { url: imageUrl.substring(0, 50) });
+            this.log('info', '图片元素添加成功', { 
+              url: imageUrl.substring(0, 50),
+              position: { x: imageOptions.x, y: imageOptions.y },
+              size: { w: imageOptions.w, h: imageOptions.h }
+            });
           } catch (imgError) {
-            this.log('warn', '图片转换失败，添加占位符', imgError.message);
+            this.log('error', '图片转换失败，添加占位符', imgError.message);
             this.addPlaceholderImage(slide, element);
           }
           
@@ -814,6 +843,8 @@
 
         await this.loadLibrary();
 
+        // 设置PPTX为16:9比例（10英寸 × 5.625英寸）
+        this.pptxgen.layout = 'LAYOUT_16x9';
         this.pptxgen.author = 'SU3PT';
         this.pptxgen.title = '可编辑演示文稿';
         this.pptxgen.subject = '由SU3PT生成的可编辑演示文稿';
