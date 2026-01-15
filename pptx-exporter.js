@@ -844,7 +844,11 @@
         await this.loadLibrary();
 
         // 设置PPTX为16:9比例（10英寸 × 5.625英寸）
+        // 使用自定义尺寸确保比例正确
         this.pptxgen.layout = 'LAYOUT_16x9';
+        this.pptxgen.defineLayout({ name: 'CUSTOM_16x9', width: 10, height: 5.625 });
+        this.pptxgen.layout = 'CUSTOM_16x9';
+        
         this.pptxgen.author = 'SU3PT';
         this.pptxgen.title = '可编辑演示文稿';
         this.pptxgen.subject = '由SU3PT生成的可编辑演示文稿';

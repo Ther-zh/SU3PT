@@ -306,7 +306,6 @@
 
       .image-element img {
         max-width: 100%;
-        max-height: 300px;
         border-radius: 5px;
         box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
       }
@@ -1265,21 +1264,16 @@
               }
 
               renderContent() {
-                  // 创建img元素而不是直接设置innerHTML
                   const img = document.createElement('img');
                   img.src = this.content.src || this.content.url || 'https://via.placeholder.com/400x300';
                   img.alt = this.content.alt || '图片';
                   
-                  // 设置图片样式
                   img.style.width = '100%';
                   img.style.height = '100%';
-                  img.style.objectFit = 'contain'; // 使用contain而不是cover，保持图片比例
                   
-                  // 清空元素内容并添加图片
                   this.element.innerHTML = '';
                   this.element.appendChild(img);
                   
-                  // 如果是新添加的图片，尝试获取图片实际尺寸并调整元素大小
                   if (!this.content.originalSize && img.complete) {
                       this.setOriginalSize(img);
                   } else if (!this.content.originalSize) {
@@ -1291,37 +1285,30 @@
               
               // 设置图片原始尺寸的方法
               setOriginalSize(img) {
-                  // 保存原始尺寸信息
-                  this.content.originalSize = { width: img.width, height: img.height };
+                  this.content.originalSize = { width: img.naturalWidth, height: img.naturalHeight };
                   
-                  // 仅在初始添加图片时调整大小，避免后续编辑时被覆盖
                   if (!this.content.hasBeenEdited) {
-                      // 设置一个合理的初始尺寸，但不限制后续调整
-                      const initialMaxWidth = 800;
-                      const initialMaxHeight = 600;
+                      const slideWidth = 1024;
+                      const slideHeight = 576;
+                      const padding = 40;
+                      const availableWidth = slideWidth - padding * 2;
+                      const availableHeight = slideHeight - padding * 2;
                       
-                      // 计算缩放比例
-                      let scale = 1;
-                      if (img.width > initialMaxWidth || img.height > initialMaxHeight) {
-                          const widthScale = initialMaxWidth / img.width;
-                          const heightScale = initialMaxHeight / img.height;
-                          scale = Math.min(widthScale, heightScale);
-                      }
+                      const widthScale = availableWidth / img.naturalWidth;
+                      const heightScale = availableHeight / img.naturalHeight;
+                      const scale = Math.min(widthScale, heightScale);
                       
-                      // 设置元素大小
                       this.size = {
-                          width: Math.round(img.width * scale),
-                          height: Math.round(img.height * scale)
+                          width: Math.round(img.naturalWidth * scale),
+                          height: Math.round(img.naturalHeight * scale)
                       };
                       
-                      // 更新元素样式
                       const element = document.getElementById(this.id);
                       if (element) {
                           element.style.width = `${this.size.width}px`;
                           element.style.height = `${this.size.height}px`;
                       }
                       
-                      // 标记为已编辑，避免后续重新加载时再次调整
                       this.content.hasBeenEdited = true;
                   }
               }
@@ -1332,9 +1319,14 @@
                   let startX, startY, initialWidth, initialHeight, initialLeft, initialTop;
                   let parentPosition = { x: 0, y: 0 };
                   
-                  // 获取图片元素的宽高比
                   const aspectRatio = this.content.originalSize ? 
                       this.content.originalSize.width / this.content.originalSize.height : 16/9;
+                  
+                  const slideWidth = 1024;
+                  const slideHeight = 576;
+                  const padding = 40;
+                  const availableWidth = slideWidth - padding * 2;
+                  const availableHeight = slideHeight - padding * 2;
                   
                   this.resizeHandlers = this.resizeHandlers || {};
                   const handlerKey = controlPoint.dataset.action + "-" + controlPoint.className;
@@ -1381,10 +1373,23 @@
                       let newLeft = initialLeft;
                       let newTop = initialTop;
                       
-                      // 根据拖动的控制点计算新的宽高
-                      // 对于图片元素，我们保持宽高比
-                      if (isRight || isLeft) {
-                          // 宽度变化时，高度按比例调整
+                      const isCorner = (isRight || isLeft) && (isTop || isBottom);
+                      
+                      if (isCorner) {
+                          const widthChange = isRight ? deltaX : -deltaX;
+                          const heightChange = isBottom ? deltaY : -deltaY;
+                          
+                          const widthScale = (initialWidth + widthChange) / initialWidth;
+                          const heightScale = (initialHeight + heightChange) / initialHeight;
+                          
+                          const scale = Math.max(widthScale, heightScale);
+                          
+                          newWidth = Math.max(10, initialWidth * scale);
+                          newHeight = newWidth / aspectRatio;
+                          
+                          if (isLeft) newLeft = initialLeft + (initialWidth - newWidth);
+                          if (isTop) newTop = initialTop + (initialHeight - newHeight);
+                      } else if (isRight || isLeft) {
                           if (isRight) newWidth = Math.max(10, initialWidth + deltaX);
                           if (isLeft) {
                               newWidth = Math.max(10, initialWidth - deltaX);
@@ -1392,7 +1397,6 @@
                           }
                           newHeight = newWidth / aspectRatio;
                       } else if (isBottom || isTop) {
-                          // 高度变化时，宽度按比例调整
                           if (isBottom) newHeight = Math.max(10, initialHeight + deltaY);
                           if (isTop) {
                               newHeight = Math.max(10, initialHeight - deltaY);
@@ -1402,9 +1406,14 @@
                       }
                       
                       const parentRect = element.parentElement.getBoundingClientRect();
-                      // 只限制元素不超出父容器，但允许调整到任何大小
-                      newLeft = Math.max(parentPosition.x, newLeft);
-                      newTop = Math.max(parentPosition.y, newTop);
+                      const relativeLeft = newLeft - parentPosition.x;
+                      const relativeTop = newTop - parentPosition.y;
+                      
+                      const maxLeft = availableWidth - newWidth;
+                      const maxTop = availableHeight - newHeight;
+                      
+                      newLeft = Math.max(parentPosition.x, Math.min(parentPosition.x + maxLeft, newLeft));
+                      newTop = Math.max(parentPosition.y, Math.min(parentPosition.y + maxTop, newTop));
                       
                       element.style.width = `${newWidth}px`;
                       element.style.height = `${newHeight}px`;
