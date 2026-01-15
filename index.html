@@ -408,6 +408,46 @@
         font-weight: bold;
       }
 
+      .font-size-control {
+        position: absolute;
+        top: -60px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 5px;
+        background: white;
+        padding: 5px;
+        border-radius: 4px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        z-index: 1000;
+        pointer-events: all;
+      }
+
+      .font-size-btn {
+        width: 28px;
+        height: 28px;
+        padding: 0;
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s;
+      }
+
+      .font-size-btn:hover {
+        background: #2980b9;
+      }
+
+      .font-size-btn:active {
+        transform: scale(0.95);
+      }
+
       /* 工具栏 */
       .toolbar {
         display: flex;
@@ -1242,6 +1282,112 @@
                   }
                   this.updateElement();
               }
+
+              addEditControls() {
+                  super.addEditControls();
+                  const element = $(`#${this.id}`);
+                  if (!element) return;
+
+                  const controlsContainer = element.querySelector(".element-controls");
+                  if (!controlsContainer) return;
+
+                  const fontSizeControl = document.createElement("div");
+                  fontSizeControl.className = "font-size-control";
+                  fontSizeControl.style.display = "none";
+
+                  const increaseBtn = document.createElement("button");
+                  increaseBtn.className = "font-size-btn";
+                  increaseBtn.dataset.action = "increase";
+                  increaseBtn.title = "增大字号";
+                  increaseBtn.textContent = "A+";
+
+                  const decreaseBtn = document.createElement("button");
+                  decreaseBtn.className = "font-size-btn";
+                  decreaseBtn.dataset.action = "decrease";
+                  decreaseBtn.title = "减小字号";
+                  decreaseBtn.textContent = "A-";
+
+                  fontSizeControl.appendChild(increaseBtn);
+                  fontSizeControl.appendChild(decreaseBtn);
+
+                  controlsContainer.appendChild(fontSizeControl);
+
+                  increaseBtn.addEventListener("click", (e) => {
+                      e.stopPropagation();
+                      this.handleFontSizeChange("increase");
+                  });
+
+                  decreaseBtn.addEventListener("click", (e) => {
+                      e.stopPropagation();
+                      this.handleFontSizeChange("decrease");
+                  });
+
+                  element.addEventListener("click", (e) => {
+                      if (e.target.closest(".font-size-btn")) return;
+                      fontSizeControl.style.display = fontSizeControl.style.display === "none" ? "flex" : "none";
+                  });
+              }
+
+              handleFontSizeChange(action) {
+                  const step = 2;
+                  const minSize = 12;
+                  const maxSize = 72;
+
+                  if (action === "increase") {
+                      const currentTitleSize = parseInt(this.style.fontSize) || 24;
+                      const currentBodySize = parseInt(this.style.bodyFontSize) || 16;
+                      const newTitleSize = Math.min(maxSize, currentTitleSize + step);
+                      const newBodySize = Math.min(maxSize, currentBodySize + step);
+                      this.style.fontSize = `${newTitleSize}px`;
+                      this.style.bodyFontSize = `${newBodySize}px`;
+                  } else if (action === "decrease") {
+                      const currentTitleSize = parseInt(this.style.fontSize) || 24;
+                      const currentBodySize = parseInt(this.style.bodyFontSize) || 16;
+                      const newTitleSize = Math.max(minSize, currentTitleSize - step);
+                      const newBodySize = Math.max(minSize, currentBodySize - step);
+                      this.style.fontSize = `${newTitleSize}px`;
+                      this.style.bodyFontSize = `${newBodySize}px`;
+                  }
+
+                  const element = $(`#${this.id}`);
+                  if (element) {
+                      const title = element.querySelector(".text-title");
+                      const body = element.querySelector(".text-body");
+                      
+                      if (title) {
+                          title.style.fontSize = this.style.fontSize || '24px';
+                      }
+                      if (body) {
+                          body.style.fontSize = this.style.bodyFontSize || '16px';
+                      }
+                  }
+              }
+
+              updateElement() {
+                  const element = $(`#${this.id}`);
+                  if (element) {
+                      element.style.left = `${this.position.x}px`;
+                      element.style.top = `${this.position.y}px`;
+                      element.style.width = `${this.size.width}px`;
+                      element.style.height = `${this.size.height}px`;
+                      element.style.transform = `rotate(${this.rotation}deg)`;
+                      element.style.zIndex = this.zIndex;
+
+                      const title = element.querySelector(".text-title");
+                      const body = element.querySelector(".text-body");
+                      
+                      if (title) {
+                          title.style.fontSize = this.style.fontSize || '24px';
+                          title.style.color = this.style.color || '#000';
+                          title.style.fontWeight = this.style.fontWeight || 'bold';
+                          title.style.textAlign = this.style.textAlign || 'left';
+                      }
+                      if (body) {
+                          body.style.fontSize = this.style.bodyFontSize || '16px';
+                          body.style.color = this.style.color || '#000';
+                      }
+                  }
+              }
           }
 
           // 图片元素类
@@ -1610,7 +1756,7 @@
                       const title = document.createElement('div');
                       title.className = 'list-title';
                       title.textContent = this.content.title;
-                      title.style.fontSize = '20px';
+                      title.style.fontSize = this.style.titleFontSize || '20px';
                       title.style.fontWeight = 'bold';
                       title.style.marginBottom = '15px';
                       this.element.appendChild(title);
@@ -1628,6 +1774,7 @@
                           listItem.textContent = typeof item === 'string' ? item : (item.text || '');
                           listItem.style.marginBottom = '8px';
                           listItem.style.padding = '5px';
+                          listItem.style.fontSize = this.style.itemFontSize || '16px';
                           listItem.dataset.index = index;
                           list.appendChild(listItem);
                       });
@@ -1670,6 +1817,112 @@
                           this.contentEditableHandlers.push(() => {
                               item.removeEventListener("blur", itemHandler);
                           });
+                      });
+                  }
+              }
+
+              addEditControls() {
+                  super.addEditControls();
+                  const element = $(`#${this.id}`);
+                  if (!element) return;
+
+                  const controlsContainer = element.querySelector(".element-controls");
+                  if (!controlsContainer) return;
+
+                  const fontSizeControl = document.createElement("div");
+                  fontSizeControl.className = "font-size-control";
+                  fontSizeControl.style.display = "none";
+
+                  const increaseTitleBtn = document.createElement("button");
+                  increaseTitleBtn.className = "font-size-btn";
+                  increaseTitleBtn.dataset.action = "increase-title";
+                  increaseTitleBtn.title = "增大标题字号";
+                  increaseTitleBtn.textContent = "T+";
+
+                  const decreaseTitleBtn = document.createElement("button");
+                  decreaseTitleBtn.className = "font-size-btn";
+                  decreaseTitleBtn.dataset.action = "decrease-title";
+                  decreaseTitleBtn.title = "减小标题字号";
+                  decreaseTitleBtn.textContent = "T-";
+
+                  const increaseItemBtn = document.createElement("button");
+                  increaseItemBtn.className = "font-size-btn";
+                  increaseItemBtn.dataset.action = "increase-item";
+                  increaseItemBtn.title = "增大列表字号";
+                  increaseItemBtn.textContent = "L+";
+
+                  const decreaseItemBtn = document.createElement("button");
+                  decreaseItemBtn.className = "font-size-btn";
+                  decreaseItemBtn.dataset.action = "decrease-item";
+                  decreaseItemBtn.title = "减小列表字号";
+                  decreaseItemBtn.textContent = "L-";
+
+                  fontSizeControl.appendChild(increaseTitleBtn);
+                  fontSizeControl.appendChild(decreaseTitleBtn);
+                  fontSizeControl.appendChild(increaseItemBtn);
+                  fontSizeControl.appendChild(decreaseItemBtn);
+
+                  controlsContainer.appendChild(fontSizeControl);
+
+                  increaseTitleBtn.addEventListener("click", (e) => {
+                      e.stopPropagation();
+                      this.handleFontSizeChange("increase-title");
+                  });
+
+                  decreaseTitleBtn.addEventListener("click", (e) => {
+                      e.stopPropagation();
+                      this.handleFontSizeChange("decrease-title");
+                  });
+
+                  increaseItemBtn.addEventListener("click", (e) => {
+                      e.stopPropagation();
+                      this.handleFontSizeChange("increase-item");
+                  });
+
+                  decreaseItemBtn.addEventListener("click", (e) => {
+                      e.stopPropagation();
+                      this.handleFontSizeChange("decrease-item");
+                  });
+
+                  element.addEventListener("click", (e) => {
+                      if (e.target.closest(".font-size-btn")) return;
+                      fontSizeControl.style.display = fontSizeControl.style.display === "none" ? "flex" : "none";
+                  });
+              }
+
+              handleFontSizeChange(action) {
+                  const step = 2;
+                  const minSize = 12;
+                  const maxSize = 72;
+
+                  if (action === "increase-title") {
+                      const currentSize = parseInt(this.style.titleFontSize) || 20;
+                      const newSize = Math.min(maxSize, currentSize + step);
+                      this.style.titleFontSize = `${newSize}px`;
+                  } else if (action === "decrease-title") {
+                      const currentSize = parseInt(this.style.titleFontSize) || 20;
+                      const newSize = Math.max(minSize, currentSize - step);
+                      this.style.titleFontSize = `${newSize}px`;
+                  } else if (action === "increase-item") {
+                      const currentSize = parseInt(this.style.itemFontSize) || 16;
+                      const newSize = Math.min(maxSize, currentSize + step);
+                      this.style.itemFontSize = `${newSize}px`;
+                  } else if (action === "decrease-item") {
+                      const currentSize = parseInt(this.style.itemFontSize) || 16;
+                      const newSize = Math.max(minSize, currentSize - step);
+                      this.style.itemFontSize = `${newSize}px`;
+                  }
+
+                  const element = $(`#${this.id}`);
+                  if (element) {
+                      const title = element.querySelector(".list-title");
+                      const items = element.querySelectorAll(".list-item");
+                      
+                      if (title) {
+                          title.style.fontSize = this.style.titleFontSize || '20px';
+                      }
+                      items.forEach(item => {
+                          item.style.fontSize = this.style.itemFontSize || '16px';
                       });
                   }
               }
