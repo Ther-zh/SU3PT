@@ -978,31 +978,18 @@
                           newTop = initialTop + deltaY;
                       }
 
-                      const parentRect = element.parentElement.getBoundingClientRect();
-                      const parentStyle = window.getComputedStyle(element.parentElement);
-                      const parentPaddingLeft = parseInt(parentStyle.paddingLeft) || 0;
-                      const parentPaddingTop = parseInt(parentStyle.paddingTop) || 0;
-                      
-                      // 计算相对于父容器的位置（考虑padding）
-                      const parentPosition = {
-                          x: parentRect.left + parentPaddingLeft,
-                          y: parentRect.top + parentPaddingTop
-                      };
-                      
-                      // 只限制元素不超出父容器内容区域
-                      newLeft = Math.max(parentPaddingLeft, newLeft);
-                      newTop = Math.max(parentPaddingTop, newTop);
-                      
+                      newLeft = Math.max(parentPosition.x, newLeft);
+                      newTop = Math.max(parentPosition.y, newTop);
+
                       element.style.width = `${newWidth}px`;
                       element.style.height = `${newHeight}px`;
-                      element.style.left = `${newLeft}px`;
-                      element.style.top = `${newTop}px`;
-                      
-                      // 保存相对于父容器的位置（减去padding）
+                      element.style.left = `${newLeft - parentPosition.x}px`;
+                      element.style.top = `${newTop - parentPosition.y}px`;
+
                       this.size.width = newWidth;
                       this.size.height = newHeight;
-                      this.position.x = newLeft - parentPaddingLeft;
-                      this.position.y = newTop - parentPaddingTop;
+                      this.position.x = newLeft - parentPosition.x;
+                      this.position.y = newTop - parentPosition.y;
                   };
 
                   const onMouseUp = () => {
@@ -1376,16 +1363,24 @@
                       const isCorner = (isRight || isLeft) && (isTop || isBottom);
                       
                       if (isCorner) {
-                          const widthChange = isRight ? deltaX : -deltaX;
-                          const heightChange = isBottom ? deltaY : -deltaY;
+                          let tempWidth = initialWidth;
+                          let tempHeight = initialHeight;
                           
-                          const widthScale = (initialWidth + widthChange) / initialWidth;
-                          const heightScale = (initialHeight + heightChange) / initialHeight;
+                          if (isRight) tempWidth = Math.max(10, initialWidth + deltaX);
+                          if (isLeft) tempWidth = Math.max(10, initialWidth - deltaX);
+                          if (isBottom) tempHeight = Math.max(10, initialHeight + deltaY);
+                          if (isTop) tempHeight = Math.max(10, initialHeight - deltaY);
                           
-                          const scale = Math.max(widthScale, heightScale);
+                          const widthScale = tempWidth / initialWidth;
+                          const heightScale = tempHeight / initialHeight;
                           
-                          newWidth = Math.max(10, initialWidth * scale);
-                          newHeight = newWidth / aspectRatio;
+                          if (Math.abs(widthScale - 1) >= Math.abs(heightScale - 1)) {
+                              newWidth = tempWidth;
+                              newHeight = newWidth / aspectRatio;
+                          } else {
+                              newHeight = tempHeight;
+                              newWidth = newHeight * aspectRatio;
+                          }
                           
                           if (isLeft) newLeft = initialLeft + (initialWidth - newWidth);
                           if (isTop) newTop = initialTop + (initialHeight - newHeight);
